@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <title>Learn Python!</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- View: Level Select -->
+  <div id="view-level-select" class="view">
+    <div class="site-header">
+      <div>
+        <h1>Learn Python!</h1>
+        <p class="subtitle">Choose a level and start solving problems.</p>
+      </div>
+      <button id="btn-clear-history" class="btn-danger">Clear History</button>
+    </div>
+    <div id="level-cards" class="level-cards"></div>
+  </div>
+
+  <!-- View: Problems -->
+  <div id="view-problems" class="view hidden">
+    <button id="btn-back-levels" class="btn-secondary">← All Levels</button>
+    <h2 id="problems-heading"></h2>
+    <p id="problems-subtitle" class="subtitle"></p>
+    <ul id="problems-list" class="problems-list"></ul>
+  </div>
+
+  <!-- View: Editor -->
+  <div id="view-editor" class="view hidden">
+    <button id="btn-back" class="btn-secondary">← Back to Problems</button>
+    <div class="card editor-card">
+      <h3 id="editor-title"></h3>
+      <p id="editor-description" class="editor-description"></p>
+      <p id="editor-hint" class="editor-hint hidden"></p>
+      <textarea id="code-editor" class="code-editor" spellcheck="false" placeholder="# Write your Python code here" aria-label="Python code editor"></textarea>
+      <button id="btn-run" class="btn-primary" disabled>Loading Python...</button>
+      <div id="output-panel" class="output-panel hidden">
+        <p class="output-label">Output:</p>
+        <pre id="output-text"></pre>
+      </div>
+      <div id="feedback-banner" class="feedback-banner hidden"></div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
