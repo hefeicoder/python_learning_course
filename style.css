@@ -138,6 +138,7 @@ body {
 .problem-status { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
 .problem-status.solved { color: #276749; }
 .problem-status.unsolved { color: #a0aec0; }
+.problem-status.in-progress { color: #d69e2e; }
 
 /* Editor */
 .editor-card { }

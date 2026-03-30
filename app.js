@@ -4,6 +4,7 @@ const state = {
   currentLevel: null,
   currentTutorialTopicIndex: null,
   currentTutorialQuestionIndex: null,
+  advanceTimer: null,
   pyodideReady: false,
   pyodide: null,
 };
@@ -76,7 +77,7 @@ function showTutorialTopics() {
     const isComplete = solvedCount === topic.questions.length;
     const isStarted = solvedCount > 0;
     const statusText = isComplete ? '✓ Done' : isStarted ? `${solvedCount} / ${topic.questions.length} done` : 'Not started';
-    const statusClass = isComplete ? 'solved' : 'unsolved';
+    const statusClass = isComplete ? 'solved' : isStarted ? 'in-progress' : 'unsolved';
     const li = document.createElement('li');
     li.className = `problem-item${isComplete ? ' solved' : ''}`;
     li.innerHTML = `
@@ -90,6 +91,7 @@ function showTutorialTopics() {
 
 // ─── Tutorial View ────────────────────────────────────────────────────────────
 function showTutorial(topicIndex, questionIndex) {
+  clearTimeout(state.advanceTimer);
   state.currentTutorialTopicIndex = topicIndex;
   state.currentTutorialQuestionIndex = questionIndex;
 
@@ -190,7 +192,7 @@ sys.stdout = io.StringIO()
     const advanceFromQuestion = state.currentTutorialQuestionIndex;
     const advanceTopic = TUTORIAL[advanceFromTopic];
 
-    setTimeout(() => {
+    state.advanceTimer = setTimeout(() => {
       const nextQuestion = advanceFromQuestion + 1;
       if (nextQuestion < advanceTopic.questions.length) {
         showTutorial(advanceFromTopic, nextQuestion);
