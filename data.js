@@ -587,3 +587,188 @@ const PROBLEMS = {
     }
   ]
 };
+
+const TUTORIAL = [
+  {
+    id: "t1",
+    title: "Your First Line of Code",
+    explanation: {
+      what: "print() is a built-in function that displays output on the screen. Anything you put inside the parentheses gets shown.",
+      when: "Any time you want to see a result, show a message, or check what a value is.",
+      example: `print("Hello, Python!")\nprint(42)`
+    },
+    questions: [
+      { id: "t1_1", description: "Print Hello, Python! to the screen.", expectedOutput: "Hello, Python!" },
+      { id: "t1_2", description: "Print the number 42.", expectedOutput: "42" },
+      { id: "t1_3", description: "Print Hello on the first line and World on the second line.", expectedOutput: "Hello\nWorld" }
+    ]
+  },
+  {
+    id: "t2",
+    title: "Numbers and Math",
+    explanation: {
+      what: "Python can do arithmetic using + (add), - (subtract), * (multiply), and / (divide). Python follows standard math order: parentheses first, then * and /, then + and -.",
+      when: "Any time you need to calculate something — scores, distances, prices, ages.",
+      example: `print(10 + 5)     # 15\nprint(3 * 4)      # 12\nprint(10 / 4)     # 2.5\nprint(3 * 4 + 2)  # 14`
+    },
+    questions: [
+      { id: "t2_1", description: "Print the result of 3 * 4 + 2.", expectedOutput: "14" },
+      { id: "t2_2", description: "Print the result of 10 - 3.", expectedOutput: "7" },
+      { id: "t2_3", description: "Print the result of 15 / 2.", expectedOutput: "7.5" }
+    ]
+  },
+  {
+    id: "t3",
+    title: "Variables",
+    explanation: {
+      what: "A variable is a named container that stores a value. You create one with: name = value.\n\nNaming rules:\n• Use only letters, digits, and underscores\n• Cannot start with a digit (2fast is invalid)\n• No spaces or special characters\n• Case-sensitive: name and Name are different variables\n• Cannot use reserved words: if, for, while, True, False, and, or, not, in, return",
+      when: "Any time you want to save a value and use it again later — like storing a player name, a score, or a calculation result.",
+      example: `name = "Alex"\nscore = 100\nprint(name)      # Alex\nprint(score)     # 100\n\n# Case matters!\nmy_score = 50\nMyScore = 99\nprint(my_score)  # 50`
+    },
+    questions: [
+      { id: "t3_1", description: "Create a variable called name with the value \"Alex\" and print it.", expectedOutput: "Alex" },
+      { id: "t3_2", description: "Create my_score = 100 and MyScore = 200. Print my_score.", expectedOutput: "100" },
+      { id: "t3_3", description: "Create x = 5 and y = 3, then print their sum.", expectedOutput: "8" }
+    ]
+  },
+  {
+    id: "t4",
+    title: "Data Types",
+    explanation: {
+      what: "Every value in Python has a type. The four basic types are:\n• int — whole numbers like 42\n• float — decimal numbers like 3.14\n• str — text in quotes like \"hello\"\n• bool — True or False\n\nUse type() to check what type something is.",
+      when: "When you need to know what kind of value you are working with — especially before doing math or joining values together.",
+      example: `print(type(42))       # <class 'int'>\nprint(type(3.14))     # <class 'float'>\nprint(type("hello"))  # <class 'str'>\nprint(type(True))     # <class 'bool'>`
+    },
+    questions: [
+      { id: "t4_1", description: "Print the type of 42.", expectedOutput: "<class 'int'>" },
+      { id: "t4_2", description: "Print the type of 3.14.", expectedOutput: "<class 'float'>" },
+      { id: "t4_3", description: "Print the type of \"hello\".", expectedOutput: "<class 'str'>" }
+    ]
+  },
+  {
+    id: "t5",
+    title: "Type Conversion",
+    explanation: {
+      what: "You can convert a value from one type to another:\n• int() converts to a whole number\n• float() converts to a decimal\n• str() converts to text",
+      when: "When you have text that contains a number and need to do math with it, or when you need to join a number with a string.",
+      example: `num = int("5")      # "5" becomes 5\ndec = float(3)      # 3 becomes 3.0\ntxt = str(42)       # 42 becomes "42"\nprint(num + 10)     # 15\nprint(txt + "!")    # 42!`
+    },
+    questions: [
+      { id: "t5_1", description: "Convert the string \"7\" to an integer, add 3, and print the result.", expectedOutput: "10" },
+      { id: "t5_2", description: "Convert the integer 5 to a float and print it.", expectedOutput: "5.0" },
+      { id: "t5_3", description: "Convert the number 42 to a string, join it with \"!\", and print the result.", expectedOutput: "42!" }
+    ]
+  },
+  {
+    id: "t6",
+    title: "Text (Strings)",
+    explanation: {
+      what: "A string is text wrapped in quotes (single or double — both work). You can:\n• Join two strings with + (concatenation)\n• Repeat a string with * and a number\n• Get its length with len()",
+      when: "Any time you work with words, names, sentences, or messages.",
+      example: `greeting = "Hello" + " " + "World"\nprint(greeting)       # Hello World\nprint("ha" * 3)       # hahaha\nprint(len("Python"))  # 6`
+    },
+    questions: [
+      { id: "t6_1", description: "Create first = \"Hello\" and second = \"World\". Print them joined with a space between.", expectedOutput: "Hello World" },
+      { id: "t6_2", description: "Print the word \"ha\" repeated 3 times (no spaces).", expectedOutput: "hahaha" },
+      { id: "t6_3", description: "Print the number of characters in the word \"Python\".", expectedOutput: "6" }
+    ]
+  },
+  {
+    id: "t7",
+    title: "True and False",
+    explanation: {
+      what: "A bool is a value that is either True or False. Comparison operators produce bools:\n• == equal to\n• != not equal to\n• > greater than\n• < less than\n• >= greater than or equal\n• <= less than or equal",
+      when: "Any time you need to check a condition — is the score high enough? Are two values equal? Is a number positive?",
+      example: `print(10 > 3)    # True\nprint(5 == 5)    # True\nprint(4 != 4)    # False\nprint(7 >= 7)    # True`
+    },
+    questions: [
+      { id: "t7_1", description: "Print whether 10 > 3.", expectedOutput: "True" },
+      { id: "t7_2", description: "Print whether 5 == 5.", expectedOutput: "True" },
+      { id: "t7_3", description: "Print whether 7 != 7.", expectedOutput: "False" }
+    ]
+  },
+  {
+    id: "t8",
+    title: "And, Or, Not",
+    explanation: {
+      what: "Logical operators combine boolean values:\n• and — both conditions must be True\n• or — at least one must be True\n• not — flips True to False and False to True",
+      when: "When a decision depends on more than one condition — like checking that someone is both old enough and has a ticket.",
+      example: `age = 9\nprint(age > 5 and age < 13)  # True\nprint(age > 10 or age < 5)   # False\nprint(not True)               # False\nprint(not False)              # True`
+    },
+    questions: [
+      { id: "t8_1", description: "Given age = 9, print whether age > 5 and age < 13.", expectedOutput: "True" },
+      { id: "t8_2", description: "Given x = 3, print whether x > 10 or x < 5.", expectedOutput: "True" },
+      { id: "t8_3", description: "Given raining = False, print not raining.", expectedOutput: "True" }
+    ]
+  },
+  {
+    id: "t9",
+    title: "Making Decisions",
+    explanation: {
+      what: "An if statement runs a block of code only when a condition is True. else runs when the condition is False. The code inside the block must be indented (4 spaces or 1 tab).",
+      when: "Any time your program needs to behave differently depending on a value — show different messages for different ages, handle correct and incorrect answers.",
+      example: `age = 10\nif age < 13:\n    print("child")\nelse:\n    print("teen")`
+    },
+    questions: [
+      { id: "t9_1", description: "Given age = 10, print \"child\" if age is less than 13, otherwise print \"teen\".", expectedOutput: "child" },
+      { id: "t9_2", description: "Given num = 7, print \"odd\" if num is not divisible by 2, otherwise print \"even\".", expectedOutput: "odd" },
+      { id: "t9_3", description: "Given temperature = 35, print \"hot\" if temperature is greater than 30, otherwise print \"cool\".", expectedOutput: "hot" }
+    ]
+  },
+  {
+    id: "t10",
+    title: "More Conditions",
+    explanation: {
+      what: "elif (short for 'else if') lets you check multiple conditions in sequence. Python checks each one in order and runs the first block that matches. If none match, else runs.",
+      when: "When there are more than two possible outcomes — like assigning letter grades A, B, C, or F.",
+      example: `score = 75\nif score >= 90:\n    print("A")\nelif score >= 80:\n    print("B")\nelif score >= 70:\n    print("C")\nelse:\n    print("F")`
+    },
+    questions: [
+      { id: "t10_1", description: "Given score = 75, print \"A\" if >= 90, \"B\" if >= 80, \"C\" if >= 70, otherwise \"F\".", expectedOutput: "C" },
+      { id: "t10_2", description: "Given hour = 14, print \"morning\" if hour < 12, \"afternoon\" if hour < 18, otherwise \"evening\".", expectedOutput: "afternoon" },
+      { id: "t10_3", description: "Given num = 0, print \"positive\" if > 0, \"negative\" if < 0, otherwise \"zero\".", expectedOutput: "zero" }
+    ]
+  },
+  {
+    id: "t11",
+    title: "Repeating Things",
+    explanation: {
+      what: "A for loop repeats a block of code for each value in a sequence. range(n) gives numbers from 0 up to (but not including) n. range(1, n+1) gives 1 through n.",
+      when: "Any time you need to do something multiple times — printing numbers, adding up a total, building a pattern.",
+      example: `for i in range(3):\n    print(i)       # 0, 1, 2\n\nfor i in range(1, 6):\n    print(i)       # 1, 2, 3, 4, 5`
+    },
+    questions: [
+      { id: "t11_1", description: "Print the numbers 1 to 5, each on a new line.", expectedOutput: "1\n2\n3\n4\n5" },
+      { id: "t11_2", description: "Print \"hello\" 3 times, each on a new line.", expectedOutput: "hello\nhello\nhello" },
+      { id: "t11_3", description: "Use a loop to calculate and print the sum of numbers 1 to 5.", expectedOutput: "15" }
+    ]
+  },
+  {
+    id: "t12",
+    title: "Controlling the Range",
+    explanation: {
+      what: "range(x, y) starts at x and stops before y. range(x, y, z) also sets the step — how much to add each time. Use a negative step to count down.",
+      when: "When you need to loop over a specific span — starting mid-way, stepping by twos, or counting backwards.",
+      example: `for i in range(3, 8):      # 3 4 5 6 7\n    print(i)\n\nfor i in range(0, 11, 2):  # 0 2 4 6 8 10\n    print(i)\n\nfor i in range(5, 0, -1):  # 5 4 3 2 1\n    print(i)`
+    },
+    questions: [
+      { id: "t12_1", description: "Print the numbers from 3 to 7, each on a new line.", expectedOutput: "3\n4\n5\n6\n7" },
+      { id: "t12_2", description: "Print the even numbers from 2 to 10, each on a new line.", expectedOutput: "2\n4\n6\n8\n10" },
+      { id: "t12_3", description: "Print the numbers counting down from 5 to 1, each on a new line.", expectedOutput: "5\n4\n3\n2\n1" }
+    ]
+  },
+  {
+    id: "t13",
+    title: "Lists",
+    explanation: {
+      what: "A list stores multiple values in one variable, in order, inside square brackets [ ]. Items are accessed by their index (position) starting at 0. len() tells you how many items are in the list.",
+      when: "Any time you have multiple related values to keep together — a list of names, scores, colours, or anything.",
+      example: `fruits = ["apple", "banana", "cherry"]\nprint(fruits)       # ['apple', 'banana', 'cherry']\nprint(fruits[0])    # apple  (first item)\nprint(fruits[1])    # banana (second item)\nprint(len(fruits))  # 3`
+    },
+    questions: [
+      { id: "t13_1", description: "Create a list called fruits containing \"apple\", \"banana\", and \"cherry\". Print the list.", expectedOutput: "['apple', 'banana', 'cherry']" },
+      { id: "t13_2", description: "Create the list [10, 20, 30, 40, 50] and print the second item.", expectedOutput: "20" },
+      { id: "t13_3", description: "Print the number of items in the list [\"red\", \"green\", \"blue\"].", expectedOutput: "3" }
+    ]
+  }
+];
