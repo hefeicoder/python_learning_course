@@ -15,8 +15,13 @@ def get_local_ip():
     except Exception:
         return "unknown"
 
-handler = http.server.SimpleHTTPRequestHandler
-handler.log_message = lambda *args: None  # silence per-request logs
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header("Cross-Origin-Opener-Policy", "same-origin")
+        self.send_header("Cross-Origin-Embedder-Policy", "require-corp")
+        super().end_headers()
+    def log_message(self, *args):
+        pass
 
 local_ip = get_local_ip()
 print(f"Learn Python! is running.")
@@ -24,7 +29,7 @@ print(f"  Local:   http://localhost:{PORT}")
 print(f"  Network: http://{local_ip}:{PORT}")
 print(f"\nPress Ctrl+C to stop.\n")
 
-with http.server.HTTPServer(("0.0.0.0", PORT), handler) as httpd:
+with http.server.HTTPServer(("0.0.0.0", PORT), Handler) as httpd:
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
