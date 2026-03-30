@@ -711,7 +711,7 @@ const TUTORIAL = [
     },
     questions: [
       { id: "t9_1", description: "Given age = 10, print \"child\" if age is less than 13, otherwise print \"teen\".", expectedOutput: "child" },
-      { id: "t9_2", description: "Given num = 7, print \"odd\" if num is not divisible by 2, otherwise print \"even\".", expectedOutput: "odd" },
+      { id: "t9_2", description: "Given num = 5, print \"big\" if num is greater than 3, otherwise print \"small\".", expectedOutput: "big" },
       { id: "t9_3", description: "Given temperature = 35, print \"hot\" if temperature is greater than 30, otherwise print \"cool\".", expectedOutput: "hot" }
     ]
   },
@@ -735,7 +735,7 @@ const TUTORIAL = [
     explanation: {
       what: "A for loop repeats a block of code for each value in a sequence. range(n) gives numbers from 0 up to (but not including) n. range(1, n+1) gives 1 through n.",
       when: "Any time you need to do something multiple times — printing numbers, adding up a total, building a pattern.",
-      example: `for i in range(3):\n    print(i)       # 0, 1, 2\n\nfor i in range(1, 6):\n    print(i)       # 1, 2, 3, 4, 5`
+      example: `for i in range(3):\n    print(i)       # prints 0, then 1, then 2 (one per line)\n\nfor i in range(1, 6):\n    print(i)       # prints 1, then 2, then 3, then 4, then 5`
     },
     questions: [
       { id: "t11_1", description: "Print the numbers 1 to 5, each on a new line.", expectedOutput: "1\n2\n3\n4\n5" },
@@ -749,7 +749,7 @@ const TUTORIAL = [
     explanation: {
       what: "range(x, y) starts at x and stops before y. range(x, y, z) also sets the step — how much to add each time. Use a negative step to count down.",
       when: "When you need to loop over a specific span — starting mid-way, stepping by twos, or counting backwards.",
-      example: `for i in range(3, 8):      # 3 4 5 6 7\n    print(i)\n\nfor i in range(0, 11, 2):  # 0 2 4 6 8 10\n    print(i)\n\nfor i in range(5, 0, -1):  # 5 4 3 2 1\n    print(i)`
+      example: `for i in range(3, 8):      # prints 3, 4, 5, 6, 7 (one per line)\n    print(i)\n\nfor i in range(0, 11, 2):  # prints 0, 2, 4, 6, 8, 10 (one per line)\n    print(i)\n\nfor i in range(5, 0, -1):  # prints 5, 4, 3, 2, 1 (one per line)\n    print(i)`
     },
     questions: [
       { id: "t12_1", description: "Print the numbers from 3 to 7, each on a new line.", expectedOutput: "3\n4\n5\n6\n7" },
