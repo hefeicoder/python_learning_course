@@ -45,6 +45,49 @@
     </div>
   </div>
 
+  <!-- View: Tutorial Topics -->
+  <div id="view-tutorial-topics" class="view hidden">
+    <button id="btn-back-from-tutorial-topics" class="btn-secondary">← All Levels</button>
+    <h2 style="margin-top:1rem;">Tutorial</h2>
+    <p id="tutorial-topics-subtitle" class="subtitle"></p>
+    <ul id="tutorial-topics-list" class="problems-list"></ul>
+  </div>
+
+  <!-- View: Tutorial (Learn + Practice) -->
+  <div id="view-tutorial" class="view hidden">
+    <button id="btn-back-to-topics" class="btn-secondary">← All Topics</button>
+    <div id="tutorial-topic-nav" class="tutorial-topic-nav"></div>
+    <p id="tutorial-progress" class="subtitle" style="margin-top:0.5rem;"></p>
+
+    <div class="card tutorial-learn-card">
+      <h3 id="tutorial-topic-title"></h3>
+      <div class="learn-block">
+        <span class="learn-label">What is it?</span>
+        <p id="tutorial-what" class="learn-text"></p>
+      </div>
+      <div class="learn-block">
+        <span class="learn-label">When do you use it?</span>
+        <p id="tutorial-when" class="learn-text"></p>
+      </div>
+      <div class="learn-block">
+        <span class="learn-label">How does it work?</span>
+        <pre id="tutorial-example" class="code-example"></pre>
+      </div>
+    </div>
+
+    <div class="card editor-card">
+      <p id="tutorial-question-label" class="tutorial-question-label"></p>
+      <p id="tutorial-question-description" class="editor-description"></p>
+      <textarea id="tutorial-code-editor" class="code-editor" spellcheck="false" placeholder="# Write your Python code here" aria-label="Python code editor"></textarea>
+      <button id="btn-run-tutorial" class="btn-primary" disabled>Loading Python...</button>
+      <div id="tutorial-output-panel" class="output-panel hidden">
+        <p class="output-label">Output:</p>
+        <pre id="tutorial-output-text"></pre>
+      </div>
+      <div id="tutorial-feedback-banner" class="feedback-banner hidden"></div>
+    </div>
+  </div>
+
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>

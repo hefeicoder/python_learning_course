@@ -23,7 +23,9 @@ body {
 /* Wider views for level select, problems and editor */
 #view-level-select,
 #view-problems,
-#view-editor {
+#view-editor,
+#view-tutorial-topics,
+#view-tutorial {
   max-width: 1100px;
 }
 .hidden { display: none !important; }
