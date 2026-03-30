@@ -182,3 +182,86 @@ body {
 }
 .feedback-banner.correct { background: #c6f6d5; color: #276749; }
 .feedback-banner.incorrect { background: #fed7d7; color: #9b2c2c; }
+
+/* ── Tutorial level card ─────────────────────────────────────────────────── */
+.level-card.tutorial { border-color: #fbd38d; }
+
+/* ── Tutorial topic navigation dots ─────────────────────────────────────── */
+.tutorial-topic-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+}
+.topic-nav-dot {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  background: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #718096;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+  padding: 0;
+}
+.topic-nav-dot:hover { background: #edf2f7; border-color: #cbd5e0; }
+.topic-nav-dot.active { background: #4299e1; border-color: #4299e1; color: white; }
+.topic-nav-dot.done { background: #c6f6d5; border-color: #68d391; color: #276749; }
+.topic-nav-dot.active.done { background: #48bb78; border-color: #48bb78; color: white; }
+
+/* ── Tutorial learn card ─────────────────────────────────────────────────── */
+.tutorial-learn-card { background: #fffdf7; border-left: 4px solid #fbd38d; }
+.tutorial-learn-card h3 { font-size: 1.3rem; margin-bottom: 1rem; }
+.learn-block { margin-bottom: 1.25rem; }
+.learn-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #d69e2e;
+  margin-bottom: 0.35rem;
+}
+.learn-text {
+  color: #4a5568;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+.code-example {
+  background: #1a202c;
+  color: #e2e8f0;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  font-family: "Fira Code", "Courier New", monospace;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+/* ── Tutorial practice section ───────────────────────────────────────────── */
+.tutorial-question-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #a0aec0;
+  margin-bottom: 0.5rem;
+}
+#tutorial-output-text {
+  background: #2d3748;
+  color: #e2e8f0;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-family: "Fira Code", "Courier New", monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 2rem;
+}
