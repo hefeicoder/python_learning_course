@@ -71,12 +71,17 @@ function showTutorialTopics() {
   const list = document.getElementById('tutorial-topics-list');
   list.innerHTML = '';
   TUTORIAL.forEach((topic, idx) => {
-    const isComplete = isTutorialTopicComplete(topic);
+    const solved = getTutorialSolved();
+    const solvedCount = topic.questions.filter(q => solved.includes(q.id)).length;
+    const isComplete = solvedCount === topic.questions.length;
+    const isStarted = solvedCount > 0;
+    const statusText = isComplete ? '✓ Done' : isStarted ? `${solvedCount} / ${topic.questions.length} done` : 'Not started';
+    const statusClass = isComplete ? 'solved' : 'unsolved';
     const li = document.createElement('li');
     li.className = `problem-item${isComplete ? ' solved' : ''}`;
     li.innerHTML = `
       <span class="problem-title"><span class="problem-num">${idx + 1}</span> ${topic.title}</span>
-      <span class="problem-status ${isComplete ? 'solved' : 'unsolved'}">${isComplete ? '✓ Done' : 'Not started'}</span>
+      <span class="problem-status ${statusClass}">${statusText}</span>
     `;
     li.addEventListener('click', () => showTutorial(idx, 0));
     list.appendChild(li);
@@ -181,12 +186,16 @@ sys.stdout = io.StringIO()
     feedbackBanner.textContent = '🎉 Correct!';
     feedbackBanner.className = 'feedback-banner correct';
 
+    const advanceFromTopic = state.currentTutorialTopicIndex;
+    const advanceFromQuestion = state.currentTutorialQuestionIndex;
+    const advanceTopic = TUTORIAL[advanceFromTopic];
+
     setTimeout(() => {
-      const nextQuestion = state.currentTutorialQuestionIndex + 1;
-      if (nextQuestion < topic.questions.length) {
-        showTutorial(state.currentTutorialTopicIndex, nextQuestion);
+      const nextQuestion = advanceFromQuestion + 1;
+      if (nextQuestion < advanceTopic.questions.length) {
+        showTutorial(advanceFromTopic, nextQuestion);
       } else {
-        const nextTopic = state.currentTutorialTopicIndex + 1;
+        const nextTopic = advanceFromTopic + 1;
         if (nextTopic < TUTORIAL.length) {
           showTutorial(nextTopic, 0);
         } else {
