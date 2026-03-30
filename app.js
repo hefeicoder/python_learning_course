@@ -2,6 +2,8 @@
 const state = {
   currentProblemId: null,
   currentLevel: null,
+  currentTutorialTopicIndex: null,
+  currentTutorialQuestionIndex: null,
   pyodideReady: false,
   pyodide: null,
 };
@@ -29,6 +31,22 @@ function findProblem(id) {
   return null;
 }
 
+// ─── Tutorial localStorage helpers ───────────────────────────────────────────
+function getTutorialSolved() {
+  return JSON.parse(localStorage.getItem('pylearn_tutorial_solved') || '[]');
+}
+function markTutorialSolved(id) {
+  const solved = getTutorialSolved();
+  if (!solved.includes(id)) {
+    solved.push(id);
+    localStorage.setItem('pylearn_tutorial_solved', JSON.stringify(solved));
+  }
+}
+function isTutorialTopicComplete(topic) {
+  const solved = getTutorialSolved();
+  return topic.questions.every(q => solved.includes(q.id));
+}
+
 function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
 const LEVEL_NUM = { beginner: 1, intermediate: 2, advanced: 3 };
@@ -41,6 +59,147 @@ function getProblemMeta(id) {
   return { level: 'beginner', index: 0 };
 }
 
+// ─── Tutorial Topics View ────────────────────────────────────────────────────
+function showTutorialTopics() {
+  const completed = TUTORIAL.filter(t => isTutorialTopicComplete(t)).length;
+
+  showView('view-tutorial-topics');
+  document.getElementById('tutorial-topics-subtitle').textContent =
+    `${completed} of ${TUTORIAL.length} topics completed`;
+  document.getElementById('btn-back-from-tutorial-topics').onclick = showLevelSelect;
+
+  const list = document.getElementById('tutorial-topics-list');
+  list.innerHTML = '';
+  TUTORIAL.forEach((topic, idx) => {
+    const isComplete = isTutorialTopicComplete(topic);
+    const li = document.createElement('li');
+    li.className = `problem-item${isComplete ? ' solved' : ''}`;
+    li.innerHTML = `
+      <span class="problem-title"><span class="problem-num">${idx + 1}</span> ${topic.title}</span>
+      <span class="problem-status ${isComplete ? 'solved' : 'unsolved'}">${isComplete ? '✓ Done' : 'Not started'}</span>
+    `;
+    li.addEventListener('click', () => showTutorial(idx, 0));
+    list.appendChild(li);
+  });
+}
+
+// ─── Tutorial View ────────────────────────────────────────────────────────────
+function showTutorial(topicIndex, questionIndex) {
+  state.currentTutorialTopicIndex = topicIndex;
+  state.currentTutorialQuestionIndex = questionIndex;
+
+  const topic = TUTORIAL[topicIndex];
+  const question = topic.questions[questionIndex];
+
+  showView('view-tutorial');
+
+  document.getElementById('btn-back-to-topics').onclick = showTutorialTopics;
+
+  // Topic nav dots
+  const nav = document.getElementById('tutorial-topic-nav');
+  nav.innerHTML = '';
+  TUTORIAL.forEach((t, i) => {
+    const isComplete = isTutorialTopicComplete(t);
+    const isCurrent = i === topicIndex;
+    const dot = document.createElement('button');
+    dot.className = [
+      'topic-nav-dot',
+      isCurrent ? 'active' : '',
+      isComplete ? 'done' : '',
+    ].filter(Boolean).join(' ');
+    dot.title = t.title;
+    dot.textContent = isComplete ? '✓' : (i + 1);
+    dot.addEventListener('click', () => showTutorial(i, 0));
+    nav.appendChild(dot);
+  });
+
+  // Progress indicator
+  document.getElementById('tutorial-progress').textContent =
+    `Topic ${topicIndex + 1} of ${TUTORIAL.length} — Question ${questionIndex + 1} of ${topic.questions.length}`;
+
+  // Learn content
+  document.getElementById('tutorial-topic-title').textContent = topic.title;
+  document.getElementById('tutorial-what').textContent = topic.explanation.what;
+  document.getElementById('tutorial-when').textContent = topic.explanation.when;
+  document.getElementById('tutorial-example').textContent = topic.explanation.example;
+
+  // Practice content
+  document.getElementById('tutorial-question-label').textContent =
+    `Practice ${questionIndex + 1} of ${topic.questions.length}`;
+  document.getElementById('tutorial-question-description').textContent = question.description;
+
+  // Reset editor
+  document.getElementById('tutorial-code-editor').value = '';
+  document.getElementById('tutorial-output-panel').classList.add('hidden');
+  document.getElementById('tutorial-output-text').textContent = '';
+  document.getElementById('tutorial-feedback-banner').className = 'feedback-banner hidden';
+
+  document.getElementById('btn-run-tutorial').onclick = runTutorialCode;
+}
+
+// ─── Tutorial Run ─────────────────────────────────────────────────────────────
+async function runTutorialCode() {
+  if (!state.pyodideReady) return;
+
+  const code = document.getElementById('tutorial-code-editor').value;
+  const outputPanel = document.getElementById('tutorial-output-panel');
+  const outputText = document.getElementById('tutorial-output-text');
+  const feedbackBanner = document.getElementById('tutorial-feedback-banner');
+
+  outputPanel.classList.remove('hidden');
+  feedbackBanner.className = 'feedback-banner hidden';
+  outputText.textContent = 'Running...';
+
+  let output = '';
+  try {
+    state.pyodide.runPython(`
+import sys
+import io
+_orig_stdout = sys.stdout
+sys.stdout = io.StringIO()
+`);
+    state.pyodide.runPython(code);
+    output = state.pyodide.runPython('sys.stdout.getvalue()');
+    state.pyodide.runPython('sys.stdout = _orig_stdout');
+  } catch (err) {
+    state.pyodide.runPython('sys.stdout = _orig_stdout');
+    outputText.textContent = 'Error:\n' + err.message;
+    feedbackBanner.textContent = 'Oops! There is an error in your code.';
+    feedbackBanner.className = 'feedback-banner incorrect';
+    return;
+  }
+
+  outputText.textContent = output || '(no output)';
+
+  const topic = TUTORIAL[state.currentTutorialTopicIndex];
+  const question = topic.questions[state.currentTutorialQuestionIndex];
+  const expected = question.expectedOutput.trim();
+  const actual = output.trim();
+
+  if (actual === expected) {
+    markTutorialSolved(question.id);
+    feedbackBanner.textContent = '🎉 Correct!';
+    feedbackBanner.className = 'feedback-banner correct';
+
+    setTimeout(() => {
+      const nextQuestion = state.currentTutorialQuestionIndex + 1;
+      if (nextQuestion < topic.questions.length) {
+        showTutorial(state.currentTutorialTopicIndex, nextQuestion);
+      } else {
+        const nextTopic = state.currentTutorialTopicIndex + 1;
+        if (nextTopic < TUTORIAL.length) {
+          showTutorial(nextTopic, 0);
+        } else {
+          showTutorialTopics();
+        }
+      }
+    }, 1200);
+  } else {
+    feedbackBanner.textContent = 'Not quite — check your output and try again!';
+    feedbackBanner.className = 'feedback-banner incorrect';
+  }
+}
+
 // ─── Level Select View ────────────────────────────────────────────────────────
 function showLevelSelect() {
   const solved = getSolved();
@@ -49,6 +208,26 @@ function showLevelSelect() {
 
   const container = document.getElementById('level-cards');
   container.innerHTML = '';
+
+  // Tutorial card (first)
+  const tutorialSolved = getTutorialSolved();
+  const tutorialSolvedCount = TUTORIAL.reduce(
+    (sum, t) => sum + t.questions.filter(q => tutorialSolved.includes(q.id)).length, 0
+  );
+  const tutorialTotal = TUTORIAL.reduce((sum, t) => sum + t.questions.length, 0);
+  const tutorialCard = document.createElement('div');
+  tutorialCard.className = 'level-card tutorial';
+  tutorialCard.innerHTML = `
+    <div class="level-card-left">
+      <h3>Tutorial</h3>
+      <p>Start here — learn Python from scratch with guided lessons</p>
+    </div>
+    <div class="level-card-right">
+      <span class="level-card-count">${tutorialSolvedCount} / ${tutorialTotal} solved</span>
+    </div>
+  `;
+  tutorialCard.addEventListener('click', showTutorialTopics);
+  container.appendChild(tutorialCard);
 
   ['beginner', 'intermediate', 'advanced'].forEach(level => {
     const total = PROBLEMS[level].length;
@@ -113,9 +292,10 @@ async function loadPyodide() {
   script.onload = async () => {
     state.pyodide = await globalThis.loadPyodide();
     state.pyodideReady = true;
-    const runBtn = document.getElementById('btn-run');
-    runBtn.disabled = false;
-    runBtn.textContent = 'Run Code';
+    ['btn-run', 'btn-run-tutorial'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) { btn.disabled = false; btn.textContent = 'Run Code'; }
+    });
   };
   document.head.appendChild(script);
 }
@@ -205,6 +385,7 @@ sys.stdout = io.StringIO()
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-clear-history').addEventListener('click', () => {
     localStorage.removeItem('pylearn_solved');
+    localStorage.removeItem('pylearn_tutorial_solved');
     showLevelSelect();
   });
   showLevelSelect();
