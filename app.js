@@ -9,6 +9,29 @@ const state = {
   pyodide: null,
 };
 
+// ─── Emoji Pop Celebration ───────────────────────────────────────────────────
+function triggerEmojiPop() {
+  const emojis = ['🎉', '⭐', '🏆', '🌟', '🥳', '💥', '🎊', '👏'];
+  const container = document.createElement('div');
+  container.className = 'emoji-container';
+  document.body.appendChild(container);
+
+  for (let i = 0; i < 18; i++) {
+    const el = document.createElement('div');
+    el.className = 'emoji-pop';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    const duration = 1.0 + Math.random() * 0.8;
+    const delay    = Math.random() * 0.6;
+    const x        = 5 + Math.random() * 90;
+    const y        = 20 + Math.random() * 60;
+    const size     = 1.8 + Math.random() * 1.6;
+    el.style.cssText = `left:${x}%;top:${y}%;font-size:${size}rem;animation-duration:${duration}s;animation-delay:${delay}s;`;
+    container.appendChild(el);
+  }
+
+  setTimeout(() => container.remove(), 2200);
+}
+
 // ─── View Router ─────────────────────────────────────────────────────────────
 function showView(viewId) {
   document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
@@ -187,6 +210,7 @@ sys.stdout = io.StringIO()
     markTutorialSolved(question.id);
     feedbackBanner.textContent = '🎉 Correct!';
     feedbackBanner.className = 'feedback-banner correct';
+    triggerEmojiPop();
 
     const advanceFromTopic = state.currentTutorialTopicIndex;
     const advanceFromQuestion = state.currentTutorialQuestionIndex;
@@ -384,6 +408,7 @@ sys.stdout = io.StringIO()
     } else {
       feedbackBanner.textContent = '🎉 Correct! Great job!';
       feedbackBanner.className = 'feedback-banner correct';
+      triggerEmojiPop();
       markSolved(state.currentProblemId);
     }
   } else {
