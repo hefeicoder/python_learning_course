@@ -734,8 +734,30 @@ document.addEventListener('keydown', e => {
   }
 });
 
+// ─── Line numbers for all code editors ───────────────────────────────────────
+function initLineNumbers(ta) {
+  const wrap = document.createElement('div');
+  wrap.className = 'editor-wrap';
+  ta.parentNode.insertBefore(wrap, ta);
+  const nums = document.createElement('div');
+  nums.className = 'line-nums';
+  wrap.appendChild(nums);
+  wrap.appendChild(ta);
+
+  function update() {
+    const count = ta.value.split('\n').length;
+    nums.innerHTML = Array.from({length: count}, (_, i) => `<span>${i + 1}</span>`).join('');
+    nums.scrollTop = ta.scrollTop;
+  }
+  ta.addEventListener('input', update);
+  ta.addEventListener('scroll', () => { nums.scrollTop = ta.scrollTop; });
+  update();
+}
+
 // ─── Bootstrap ───────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.code-editor').forEach(initLineNumbers);
+
   document.getElementById('btn-clear-history').addEventListener('click', () => {
     localStorage.removeItem('pylearn_solved');
     localStorage.removeItem('pylearn_tutorial_solved');
