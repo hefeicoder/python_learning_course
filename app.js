@@ -708,16 +708,30 @@ sys.stdout = io.StringIO()
   }
 }
 
-// ─── Tab key → indent in all code editors ────────────────────────────────────
+// ─── Keyboard helpers for all code editors ───────────────────────────────────
 document.addEventListener('keydown', e => {
-  if (e.key !== 'Tab') return;
   const el = e.target;
   if (!el.classList.contains('code-editor')) return;
-  e.preventDefault();
-  const start = el.selectionStart;
-  const end = el.selectionEnd;
-  el.value = el.value.slice(0, start) + '    ' + el.value.slice(end);
-  el.selectionStart = el.selectionEnd = start + 4;
+
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    el.value = el.value.slice(0, start) + '    ' + el.value.slice(end);
+    el.selectionStart = el.selectionEnd = start + 4;
+  }
+
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    // Find the start of the current line
+    const lineStart = el.value.lastIndexOf('\n', start - 1) + 1;
+    // Extract leading whitespace from the current line
+    const indent = el.value.slice(lineStart).match(/^[ \t]*/)[0];
+    el.value = el.value.slice(0, start) + '\n' + indent + el.value.slice(end);
+    el.selectionStart = el.selectionEnd = start + 1 + indent.length;
+  }
 });
 
 // ─── Bootstrap ───────────────────────────────────────────────────────────────
