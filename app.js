@@ -290,6 +290,7 @@ async function runInterviewCode() {
 
   const testRunner = `
 import json as _json_out
+import traceback as _tb
 
 _test_cases = _test_cases_js.to_py()
 _arg_types = ${argTypesJson}
@@ -323,7 +324,7 @@ for _tc in _test_cases:
         _pass = _actual == _expected
         _results.append({'pass': bool(_pass), 'actual': repr(_actual), 'expected': repr(_expected)})
     except Exception as _e:
-        _results.append({'pass': False, 'error': str(_e)})
+        _results.append({'pass': False, 'error': str(_e), 'traceback': _tb.format_exc()})
         break  # stop on first error — remaining tests would fail identically
 
 _results_json = _json_out.dumps(_results)
@@ -347,7 +348,7 @@ _results_json = _json_out.dumps(_results)
     if (r.pass) {
       row.innerHTML = `<span class="test-icon">✓</span> Test ${i + 1} passed`;
     } else if (r.error) {
-      row.innerHTML = `<span class="test-icon">✗</span> Test ${i + 1} error — ${r.error}`;
+      row.innerHTML = `<span class="test-icon">✗</span> Test ${i + 1} raised an exception:<pre class="traceback-block">${r.traceback}</pre>`;
     } else {
       row.innerHTML = `<span class="test-icon">✗</span> Test ${i + 1} failed &nbsp;—&nbsp; expected <code>${r.expected}</code>&nbsp; got <code>${r.actual}</code>`;
     }

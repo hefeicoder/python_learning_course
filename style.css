@@ -393,3 +393,14 @@ body {
 .test-result-row.pass { background: #f0fff4; color: #276749; }
 .test-result-row.fail { background: #fff5f5; color: #9b2c2c; }
 .test-icon { font-weight: 700; flex-shrink: 0; }
+.traceback-block {
+  margin-top: 0.4rem;
+  background: #2d3748;
+  color: #feb2b2;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  width: 100%;
+}
