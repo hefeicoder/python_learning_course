@@ -88,6 +88,15 @@ function isInterviewTopicComplete(topic) {
   const solved = getInterviewSolved();
   return topic.problems.every(p => solved.includes(p.id));
 }
+function getInterviewCode(id) {
+  const all = JSON.parse(localStorage.getItem('pylearn_interview_code') || '{}');
+  return all[id] || null;
+}
+function saveInterviewCode(id, code) {
+  const all = JSON.parse(localStorage.getItem('pylearn_interview_code') || '{}');
+  all[id] = code;
+  localStorage.setItem('pylearn_interview_code', JSON.stringify(all));
+}
 
 function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
@@ -236,8 +245,8 @@ function showInterviewTopic(topicIndex, problemIndex) {
 
   document.getElementById('interview-problem-description').textContent = problem.description;
 
-  // Editor
-  document.getElementById('interview-code-editor').value = problem.stub;
+  // Editor — restore saved code if available, otherwise show stub
+  document.getElementById('interview-code-editor').value = getInterviewCode(problem.id) ?? problem.stub;
   document.getElementById('interview-test-results').classList.add('hidden');
   document.getElementById('interview-test-results').innerHTML = '';
   document.getElementById('interview-feedback-banner').className = 'feedback-banner hidden';
@@ -252,6 +261,7 @@ async function runInterviewCode() {
   const topic   = INTERVIEW[state.currentInterviewTopicIndex];
   const problem = topic.problems[state.currentInterviewProblemIndex];
   const code    = document.getElementById('interview-code-editor').value;
+  saveInterviewCode(problem.id, code);
   const resultsPanel   = document.getElementById('interview-test-results');
   const feedbackBanner = document.getElementById('interview-feedback-banner');
 
@@ -716,6 +726,7 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.removeItem('pylearn_solved');
     localStorage.removeItem('pylearn_tutorial_solved');
     localStorage.removeItem('pylearn_interview_solved');
+    localStorage.removeItem('pylearn_interview_code');
     showLevelSelect();
   });
   showLevelSelect();
