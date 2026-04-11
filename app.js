@@ -245,6 +245,134 @@ function showInterviewTopic(topicIndex, problemIndex) {
   document.getElementById('btn-run-interview').onclick = runInterviewCode;
 }
 
+// ─── Interview Run ────────────────────────────────────────────────────────────
+async function runInterviewCode() {
+  if (!state.pyodideReady) return;
+
+  const topic   = INTERVIEW[state.currentInterviewTopicIndex];
+  const problem = topic.problems[state.currentInterviewProblemIndex];
+  const code    = document.getElementById('interview-code-editor').value;
+  const resultsPanel   = document.getElementById('interview-test-results');
+  const feedbackBanner = document.getElementById('interview-feedback-banner');
+
+  resultsPanel.innerHTML = '';
+  resultsPanel.classList.add('hidden');
+  feedbackBanner.className = 'feedback-banner hidden';
+
+  // 1. Run preamble (if topic has structural helpers like ListNode/TreeNode)
+  if (topic.preamble) {
+    try {
+      state.pyodide.runPython(topic.preamble);
+    } catch (err) {
+      feedbackBanner.textContent = 'Internal error in topic preamble: ' + err.message;
+      feedbackBanner.className = 'feedback-banner incorrect';
+      return;
+    }
+  }
+
+  // 2. Run user code (defines the function)
+  try {
+    state.pyodide.runPython(code);
+  } catch (err) {
+    feedbackBanner.textContent = 'Error in your code:\n' + err.message;
+    feedbackBanner.className = 'feedback-banner incorrect';
+    return;
+  }
+
+  // 3. Pass test cases to Pyodide as a global, then run test runner
+  state.pyodide.globals.set('_test_cases_js', problem.tests);
+
+  // Build argTypes list for Python (null entries mean no conversion)
+  const argTypes = problem.argTypes || [];
+  const argTypesJson = JSON.stringify(argTypes);
+  const returnType = problem.returnType || 'list';
+  const fnName = problem.functionName;
+
+  const testRunner = `
+import json as _json_out
+
+_test_cases = _test_cases_js.to_py()
+_arg_types = ${argTypesJson}
+_return_type = '${returnType}'
+_results = []
+
+for _tc in _test_cases:
+    _raw_args = list(_tc['args'])
+    _expected = _tc['expected']
+    if hasattr(_expected, 'to_py'):
+        _expected = _expected.to_py()
+
+    _converted_args = []
+    for _i, _arg in enumerate(_raw_args):
+        _t = _arg_types[_i] if _i < len(_arg_types) else None
+        if hasattr(_arg, 'to_py'):
+            _arg = _arg.to_py()
+        if _t == 'll':
+            _converted_args.append(_list_to_ll(_arg) if _arg else None)
+        elif _t == 'tree':
+            _converted_args.append(_build_tree(_arg) if _arg else None)
+        else:
+            _converted_args.append(_arg)
+
+    try:
+        _actual = ${fnName}(*_converted_args)
+        if _return_type == 'll':
+            _actual = _ll_to_list(_actual) if _actual else []
+        elif _return_type == 'tree':
+            _actual = _level_order(_actual) if _actual else []
+        _pass = _actual == _expected
+        _results.append({'pass': bool(_pass), 'actual': repr(_actual), 'expected': repr(_expected)})
+    except Exception as _e:
+        _results.append({'pass': False, 'error': str(_e)})
+
+_results_json = _json_out.dumps(_results)
+`;
+
+  let results;
+  try {
+    state.pyodide.runPython(testRunner);
+    results = JSON.parse(state.pyodide.globals.get('_results_json'));
+  } catch (err) {
+    feedbackBanner.textContent = 'Test runner error: ' + err.message;
+    feedbackBanner.className = 'feedback-banner incorrect';
+    return;
+  }
+
+  // 4. Display per-test results
+  resultsPanel.classList.remove('hidden');
+  results.forEach((r, i) => {
+    const row = document.createElement('div');
+    row.className = `test-result-row ${r.pass ? 'pass' : 'fail'}`;
+    if (r.pass) {
+      row.innerHTML = `<span class="test-icon">✓</span> Test ${i + 1} passed`;
+    } else if (r.error) {
+      row.innerHTML = `<span class="test-icon">✗</span> Test ${i + 1} error — ${r.error}`;
+    } else {
+      row.innerHTML = `<span class="test-icon">✗</span> Test ${i + 1} failed &nbsp;—&nbsp; expected <code>${r.expected}</code>&nbsp; got <code>${r.actual}</code>`;
+    }
+    resultsPanel.appendChild(row);
+  });
+
+  // 5. Overall verdict
+  const allPass = results.every(r => r.pass);
+  const passCount = results.filter(r => r.pass).length;
+
+  if (allPass) {
+    markInterviewSolved(problem.id);
+    feedbackBanner.textContent = `🎉 All ${results.length} tests passed!`;
+    feedbackBanner.className = 'feedback-banner correct';
+    triggerEmojiPop();
+    // Mark the active tab solved without re-rendering (re-rendering resets the editor)
+    const tabs = document.querySelectorAll('.problem-tab');
+    if (tabs[state.currentInterviewProblemIndex]) {
+      tabs[state.currentInterviewProblemIndex].classList.add('solved');
+    }
+  } else {
+    feedbackBanner.textContent = `${passCount} / ${results.length} tests passed. Keep trying.`;
+    feedbackBanner.className = 'feedback-banner incorrect';
+  }
+}
+
 // ─── Tutorial View ────────────────────────────────────────────────────────────
 function showTutorial(topicIndex, questionIndex) {
   clearTimeout(state.advanceTimer);
