@@ -505,24 +505,6 @@ function showLevelSelect() {
   const container = document.getElementById('level-cards');
   container.innerHTML = '';
 
-  // Interview card
-  const interviewSolved = getInterviewSolved();
-  const interviewSolvedCount = interviewSolved.length;
-  const interviewTotal = INTERVIEW.reduce((sum, t) => sum + t.problems.length, 0);
-  const interviewCard = document.createElement('div');
-  interviewCard.className = 'level-card interview';
-  interviewCard.innerHTML = `
-    <div class="level-card-left">
-      <h3>Interview Prep</h3>
-      <p>Data structures, big-O, and LeetCode algorithm problems</p>
-    </div>
-    <div class="level-card-right">
-      <span class="level-card-count">${interviewSolvedCount} / ${interviewTotal} solved</span>
-    </div>
-  `;
-  interviewCard.addEventListener('click', showInterviewTopics);
-  container.appendChild(interviewCard);
-
   // Tutorial card (first)
   const tutorialSolved = getTutorialSolved();
   const tutorialSolvedCount = TUTORIAL.reduce(
@@ -561,6 +543,24 @@ function showLevelSelect() {
     card.addEventListener('click', () => showProblems(level));
     container.appendChild(card);
   });
+
+  // Interview card (last)
+  const interviewSolved = getInterviewSolved();
+  const interviewSolvedCount = interviewSolved.length;
+  const interviewTotal = INTERVIEW.reduce((sum, t) => sum + t.problems.length, 0);
+  const interviewCard = document.createElement('div');
+  interviewCard.className = 'level-card interview';
+  interviewCard.innerHTML = `
+    <div class="level-card-left">
+      <h3>Interview Prep</h3>
+      <p>Data structures, big-O, and LeetCode algorithm problems</p>
+    </div>
+    <div class="level-card-right">
+      <span class="level-card-count">${interviewSolvedCount} / ${interviewTotal} solved</span>
+    </div>
+  `;
+  interviewCard.addEventListener('click', showInterviewTopics);
+  container.appendChild(interviewCard);
 }
 
 function levelDescription(level) {
