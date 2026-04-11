@@ -696,6 +696,18 @@ sys.stdout = io.StringIO()
   }
 }
 
+// ─── Tab key → indent in all code editors ────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  const el = e.target;
+  if (!el.classList.contains('code-editor')) return;
+  e.preventDefault();
+  const start = el.selectionStart;
+  const end = el.selectionEnd;
+  el.value = el.value.slice(0, start) + '    ' + el.value.slice(end);
+  el.selectionStart = el.selectionEnd = start + 4;
+});
+
 // ─── Bootstrap ───────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-clear-history').addEventListener('click', () => {
