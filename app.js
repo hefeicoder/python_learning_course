@@ -163,6 +163,88 @@ function showInterviewTopics() {
   });
 }
 
+// ─── Interview Topic View ─────────────────────────────────────────────────────
+function showInterviewTopic(topicIndex, problemIndex) {
+  state.currentInterviewTopicIndex = topicIndex;
+  state.currentInterviewProblemIndex = problemIndex;
+
+  const topic = INTERVIEW[topicIndex];
+  const problem = topic.problems[problemIndex];
+  const solved = getInterviewSolved();
+
+  showView('view-interview-topic');
+
+  document.getElementById('btn-back-to-interview-topics').onclick = showInterviewTopics;
+
+  // Topic nav dots
+  const nav = document.getElementById('interview-topic-nav');
+  nav.innerHTML = '';
+  INTERVIEW.forEach((t, i) => {
+    const isComplete = isInterviewTopicComplete(t);
+    const isCurrent = i === topicIndex;
+    const dot = document.createElement('button');
+    dot.className = [
+      'topic-nav-dot',
+      isCurrent ? 'active' : '',
+      isComplete ? 'done' : '',
+    ].filter(Boolean).join(' ');
+    dot.title = t.title;
+    dot.textContent = isComplete ? '✓' : (i + 1);
+    dot.addEventListener('click', () => showInterviewTopic(i, 0));
+    nav.appendChild(dot);
+  });
+
+  document.getElementById('interview-progress').textContent =
+    `Topic ${topicIndex + 1} of ${INTERVIEW.length}`;
+
+  // Learn panel
+  document.getElementById('interview-topic-title').textContent = topic.title;
+  document.getElementById('interview-what').textContent = topic.learn.what;
+
+  const opsTable = document.getElementById('interview-operations');
+  opsTable.innerHTML = topic.learn.operations
+    .map(op => `<tr><td>${op.name}</td><td>${op.complexity}</td></tr>`)
+    .join('');
+
+  document.getElementById('interview-python-tools').textContent =
+    topic.learn.pythonTools.join('\n');
+
+  document.getElementById('interview-example').textContent = topic.learn.example;
+
+  // Problem tabs
+  const tabs = document.getElementById('interview-problem-tabs');
+  tabs.innerHTML = '';
+  topic.problems.forEach((p, i) => {
+    const isSolved = solved.includes(p.id);
+    const isActive = i === problemIndex;
+    const btn = document.createElement('button');
+    btn.className = [
+      'problem-tab',
+      isActive ? 'active' : '',
+      isSolved ? 'solved' : '',
+    ].filter(Boolean).join(' ');
+    btn.innerHTML = `${i + 1} <span class="diff-badge ${p.difficulty}">${p.difficulty === 'easy' ? 'E' : 'M'}</span>`;
+    btn.addEventListener('click', () => showInterviewTopic(topicIndex, i));
+    tabs.appendChild(btn);
+  });
+
+  // Problem header
+  document.getElementById('interview-problem-title').textContent = problem.title;
+  const lcLink = document.getElementById('interview-leetcode-link');
+  lcLink.textContent = `#${problem.leetcode.number} ↗`;
+  lcLink.href = problem.leetcode.url;
+
+  document.getElementById('interview-problem-description').textContent = problem.description;
+
+  // Editor
+  document.getElementById('interview-code-editor').value = problem.stub;
+  document.getElementById('interview-test-results').classList.add('hidden');
+  document.getElementById('interview-test-results').innerHTML = '';
+  document.getElementById('interview-feedback-banner').className = 'feedback-banner hidden';
+
+  document.getElementById('btn-run-interview').onclick = runInterviewCode;
+}
+
 // ─── Tutorial View ────────────────────────────────────────────────────────────
 function showTutorial(topicIndex, questionIndex) {
   clearTimeout(state.advanceTimer);
