@@ -324,6 +324,7 @@ for _tc in _test_cases:
         _results.append({'pass': bool(_pass), 'actual': repr(_actual), 'expected': repr(_expected)})
     except Exception as _e:
         _results.append({'pass': False, 'error': str(_e)})
+        break  # stop on first error — remaining tests would fail identically
 
 _results_json = _json_out.dumps(_results)
 `;
