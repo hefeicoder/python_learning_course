@@ -246,7 +246,7 @@ function showInterviewTopic(topicIndex, problemIndex) {
   document.getElementById('interview-problem-description').textContent = problem.description;
 
   // Editor — restore saved code if available, otherwise show stub
-  document.getElementById('interview-code-editor').value = getInterviewCode(problem.id) ?? problem.stub;
+  setEditorValue('interview-code-editor', getInterviewCode(problem.id) ?? problem.stub);
   document.getElementById('interview-test-results').classList.add('hidden');
   document.getElementById('interview-test-results').innerHTML = '';
   document.getElementById('interview-feedback-banner').className = 'feedback-banner hidden';
@@ -432,7 +432,7 @@ function showTutorial(topicIndex, questionIndex) {
   document.getElementById('tutorial-question-description').textContent = question.description;
 
   // Reset editor
-  document.getElementById('tutorial-code-editor').value = '';
+  setEditorValue('tutorial-code-editor', '');
   document.getElementById('tutorial-output-panel').classList.add('hidden');
   document.getElementById('tutorial-output-text').textContent = '';
   document.getElementById('tutorial-feedback-banner').className = 'feedback-banner hidden';
@@ -644,7 +644,7 @@ function showEditor(problemId) {
     hintEl.classList.add('hidden');
   }
 
-  document.getElementById('code-editor').value = '';
+  setEditorValue('code-editor', '');
   document.getElementById('output-panel').classList.add('hidden');
   document.getElementById('output-text').textContent = '';
   document.getElementById('feedback-banner').className = 'feedback-banner hidden';
@@ -733,6 +733,13 @@ document.addEventListener('keydown', e => {
     el.selectionStart = el.selectionEnd = start + 1 + indent.length;
   }
 });
+
+// ─── Set editor value and sync line numbers ───────────────────────────────────
+function setEditorValue(id, value) {
+  const el = document.getElementById(id);
+  el.value = value;
+  el.dispatchEvent(new Event('input'));
+}
 
 // ─── Line numbers for all code editors ───────────────────────────────────────
 function initLineNumbers(ta) {
