@@ -88,6 +88,54 @@
     </div>
   </div>
 
+  <!-- View: Interview Topics -->
+  <div id="view-interview-topics" class="view hidden">
+    <button id="btn-back-from-interview-topics" class="btn-secondary">← All Levels</button>
+    <h2 style="margin-top:1rem;">Interview Prep</h2>
+    <p id="interview-topics-subtitle" class="subtitle"></p>
+    <ul id="interview-topics-list" class="problems-list"></ul>
+  </div>
+
+  <!-- View: Interview Topic (Learn + Practice) -->
+  <div id="view-interview-topic" class="view hidden">
+    <button id="btn-back-to-interview-topics" class="btn-secondary">← All Topics</button>
+    <div id="interview-topic-nav" class="interview-topic-nav"></div>
+    <p id="interview-progress" class="subtitle" style="margin-top:0.5rem;"></p>
+
+    <div class="card interview-learn-card">
+      <h3 id="interview-topic-title"></h3>
+      <div class="learn-block">
+        <span class="learn-label">What is it?</span>
+        <p id="interview-what" class="learn-text"></p>
+      </div>
+      <div class="learn-block">
+        <span class="learn-label">Key Operations</span>
+        <table id="interview-operations" class="ops-table"></table>
+      </div>
+      <div class="learn-block">
+        <span class="learn-label">Python Tools</span>
+        <p id="interview-python-tools" class="learn-text interview-tools-text"></p>
+      </div>
+      <div class="learn-block">
+        <span class="learn-label">Example</span>
+        <pre id="interview-example" class="code-example"></pre>
+      </div>
+    </div>
+
+    <div class="card editor-card">
+      <div id="interview-problem-tabs" class="interview-problem-tabs"></div>
+      <div class="interview-problem-header">
+        <h4 id="interview-problem-title"></h4>
+        <a id="interview-leetcode-link" href="#" target="_blank" rel="noopener" class="leetcode-link"></a>
+      </div>
+      <p id="interview-problem-description" class="editor-description"></p>
+      <textarea id="interview-code-editor" class="code-editor" spellcheck="false" autocorrect="off" autocapitalize="none" placeholder="# Implement the function" aria-label="Python code editor"></textarea>
+      <button id="btn-run-interview" class="btn-primary" disabled>Loading Python...</button>
+      <div id="interview-test-results" class="interview-test-results hidden"></div>
+      <div id="interview-feedback-banner" class="feedback-banner hidden"></div>
+    </div>
+  </div>
+
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>

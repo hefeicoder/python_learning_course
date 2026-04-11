@@ -286,3 +286,110 @@ body {
   word-break: break-word;
   min-height: 2rem;
 }
+
+/* ── Interview wide views ────────────────────────────────────────────────── */
+#view-interview-topics,
+#view-interview-topic {
+  max-width: 1100px;
+}
+
+/* ── Interview level card ────────────────────────────────────────────────── */
+.level-card.interview { border-color: #90cdf4; }
+
+/* ── Interview topic nav dots ────────────────────────────────────────────── */
+.interview-topic-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+/* ── Interview learn card ────────────────────────────────────────────────── */
+.interview-learn-card { background: #f7faff; border-left: 4px solid #4299e1; }
+.interview-learn-card h3 { font-size: 1.3rem; margin-bottom: 1rem; }
+
+/* ── Operations table ────────────────────────────────────────────────────── */
+.ops-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.ops-table td { padding: 0.3rem 0.5rem; border-bottom: 1px solid #e2e8f0; }
+.ops-table td:first-child { color: #2d3748; font-family: "Fira Code", "Courier New", monospace; }
+.ops-table td:last-child { color: #4299e1; font-weight: 600; text-align: right; }
+
+/* ── Python tools inline list ────────────────────────────────────────────── */
+.interview-tools-text {
+  font-family: "Fira Code", "Courier New", monospace;
+  font-size: 0.88rem;
+  color: #553c9a;
+  white-space: pre-line;
+}
+
+/* ── Problem tabs ────────────────────────────────────────────────────────── */
+.interview-problem-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.problem-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #4a5568;
+  transition: border-color 0.15s, background 0.15s;
+}
+.problem-tab:hover { border-color: #4299e1; }
+.problem-tab.active { border-color: #4299e1; background: #ebf8ff; color: #2b6cb0; }
+.problem-tab.solved { border-color: #68d391; background: #f0fff4; color: #276749; }
+.problem-tab.active.solved { border-color: #48bb78; background: #c6f6d5; }
+.diff-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+.diff-badge.easy   { background: #c6f6d5; color: #276749; }
+.diff-badge.medium { background: #feebc8; color: #7b341e; }
+
+/* ── Problem header (title + leetcode link) ──────────────────────────────── */
+.interview-problem-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.interview-problem-header h4 { font-size: 1.1rem; margin: 0; }
+.leetcode-link {
+  font-size: 0.8rem;
+  color: #4299e1;
+  text-decoration: none;
+  font-weight: 600;
+}
+.leetcode-link:hover { text-decoration: underline; }
+
+/* ── Test results panel ──────────────────────────────────────────────────── */
+.interview-test-results {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.test-result-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.88rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-family: "Fira Code", "Courier New", monospace;
+}
+.test-result-row.pass { background: #f0fff4; color: #276749; }
+.test-result-row.fail { background: #fff5f5; color: #9b2c2c; }
+.test-icon { font-weight: 700; flex-shrink: 0; }
