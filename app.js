@@ -130,6 +130,39 @@ function showTutorialTopics() {
   });
 }
 
+// ─── Interview Topics View ────────────────────────────────────────────────────
+function showInterviewTopics() {
+  const solved = getInterviewSolved();
+  const completedCount = INTERVIEW.filter(t => isInterviewTopicComplete(t)).length;
+
+  showView('view-interview-topics');
+  document.getElementById('interview-topics-subtitle').textContent =
+    `${completedCount} of ${INTERVIEW.length} topics completed`;
+  document.getElementById('btn-back-from-interview-topics').onclick = showLevelSelect;
+
+  const list = document.getElementById('interview-topics-list');
+  list.innerHTML = '';
+  INTERVIEW.forEach((topic, idx) => {
+    const solvedCount = topic.problems.filter(p => solved.includes(p.id)).length;
+    const isComplete = solvedCount === topic.problems.length;
+    const isStarted = solvedCount > 0;
+    const statusText = isComplete
+      ? '✓ Done'
+      : isStarted ? `${solvedCount} / ${topic.problems.length} solved`
+      : 'Not started';
+    const statusClass = isComplete ? 'solved' : isStarted ? 'in-progress' : 'unsolved';
+
+    const li = document.createElement('li');
+    li.className = `problem-item${isComplete ? ' solved' : ''}`;
+    li.innerHTML = `
+      <span class="problem-title"><span class="problem-num">${idx + 1}</span> ${topic.title}</span>
+      <span class="problem-status ${statusClass}">${statusText}</span>
+    `;
+    li.addEventListener('click', () => showInterviewTopic(idx, 0));
+    list.appendChild(li);
+  });
+}
+
 // ─── Tutorial View ────────────────────────────────────────────────────────────
 function showTutorial(topicIndex, questionIndex) {
   clearTimeout(state.advanceTimer);
