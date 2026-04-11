@@ -4,6 +4,8 @@ const state = {
   currentLevel: null,
   currentTutorialTopicIndex: null,
   currentTutorialQuestionIndex: null,
+  currentInterviewTopicIndex: null,
+  currentInterviewProblemIndex: null,
   advanceTimer: null,
   pyodideReady: false,
   pyodide: null,
@@ -69,6 +71,22 @@ function markTutorialSolved(id) {
 function isTutorialTopicComplete(topic) {
   const solved = getTutorialSolved();
   return topic.questions.every(q => solved.includes(q.id));
+}
+
+// ─── Interview localStorage helpers ──────────────────────────────────────────
+function getInterviewSolved() {
+  return JSON.parse(localStorage.getItem('pylearn_interview_solved') || '[]');
+}
+function markInterviewSolved(id) {
+  const solved = getInterviewSolved();
+  if (!solved.includes(id)) {
+    solved.push(id);
+    localStorage.setItem('pylearn_interview_solved', JSON.stringify(solved));
+  }
+}
+function isInterviewTopicComplete(topic) {
+  const solved = getInterviewSolved();
+  return topic.problems.every(p => solved.includes(p.id));
 }
 
 function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
@@ -244,6 +262,24 @@ function showLevelSelect() {
   const container = document.getElementById('level-cards');
   container.innerHTML = '';
 
+  // Interview card
+  const interviewSolved = getInterviewSolved();
+  const interviewSolvedCount = interviewSolved.length;
+  const interviewTotal = INTERVIEW.reduce((sum, t) => sum + t.problems.length, 0);
+  const interviewCard = document.createElement('div');
+  interviewCard.className = 'level-card interview';
+  interviewCard.innerHTML = `
+    <div class="level-card-left">
+      <h3>Interview Prep</h3>
+      <p>Data structures, big-O, and LeetCode algorithm problems</p>
+    </div>
+    <div class="level-card-right">
+      <span class="level-card-count">${interviewSolvedCount} / ${interviewTotal} solved</span>
+    </div>
+  `;
+  interviewCard.addEventListener('click', showInterviewTopics);
+  container.appendChild(interviewCard);
+
   // Tutorial card (first)
   const tutorialSolved = getTutorialSolved();
   const tutorialSolvedCount = TUTORIAL.reduce(
@@ -327,7 +363,7 @@ async function loadPyodide() {
   script.onload = async () => {
     state.pyodide = await globalThis.loadPyodide();
     state.pyodideReady = true;
-    ['btn-run', 'btn-run-tutorial'].forEach(id => {
+    ['btn-run', 'btn-run-tutorial', 'btn-run-interview'].forEach(id => {
       const btn = document.getElementById(id);
       if (btn) { btn.disabled = false; btn.textContent = 'Run Code'; }
     });
@@ -422,6 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-clear-history').addEventListener('click', () => {
     localStorage.removeItem('pylearn_solved');
     localStorage.removeItem('pylearn_tutorial_solved');
+    localStorage.removeItem('pylearn_interview_solved');
     showLevelSelect();
   });
   showLevelSelect();
