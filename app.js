@@ -739,9 +739,20 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Tab') {
     e.preventDefault();
     const start = el.selectionStart;
-    const end = el.selectionEnd;
-    el.value = el.value.slice(0, start) + '    ' + el.value.slice(end);
-    el.selectionStart = el.selectionEnd = start + 4;
+    const end   = el.selectionEnd;
+    if (e.shiftKey) {
+      // Dedent: remove up to 4 leading spaces from the current line
+      const lineStart = el.value.lastIndexOf('\n', start - 1) + 1;
+      const before    = el.value.slice(lineStart);
+      const spaces    = before.match(/^ {1,4}/)?.[0]?.length ?? 0;
+      if (spaces > 0) {
+        el.value = el.value.slice(0, lineStart) + el.value.slice(lineStart + spaces);
+        el.selectionStart = el.selectionEnd = Math.max(lineStart, start - spaces);
+      }
+    } else {
+      el.value = el.value.slice(0, start) + '    ' + el.value.slice(end);
+      el.selectionStart = el.selectionEnd = start + 4;
+    }
   }
 
   if (e.key === 'Enter') {
