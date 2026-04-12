@@ -321,10 +321,12 @@ for _tc in _test_cases:
         _expected = _expected.to_py()
 
     _converted_args = []
+    _display_args = []
     for _i, _arg in enumerate(_raw_args):
         _t = _arg_types[_i] if _i < len(_arg_types) else None
         if hasattr(_arg, 'to_py'):
             _arg = _arg.to_py()
+        _display_args.append(repr(_arg))
         if _t == 'll':
             _converted_args.append(_list_to_ll(_arg) if _arg else None)
         elif _t == 'tree':
@@ -339,9 +341,9 @@ for _tc in _test_cases:
         elif _return_type == 'tree':
             _actual = _level_order(_actual) if _actual else []
         _pass = _actual == _expected
-        _results.append({'pass': bool(_pass), 'actual': repr(_actual), 'expected': repr(_expected)})
+        _results.append({'pass': bool(_pass), 'actual': repr(_actual), 'expected': repr(_expected), 'args': _display_args})
     except Exception as _e:
-        _results.append({'pass': False, 'error': str(_e), 'traceback': _tb.format_exc()})
+        _results.append({'pass': False, 'error': str(_e), 'traceback': _tb.format_exc(), 'args': _display_args})
         break  # stop on first error — remaining tests would fail identically
 
 _results_json = _json_out.dumps(_results)
@@ -357,29 +359,15 @@ _results_json = _json_out.dumps(_results)
     return;
   }
 
-  // 4. Display per-test results
-  resultsPanel.classList.remove('hidden');
-  results.forEach((r, i) => {
-    const row = document.createElement('div');
-    row.className = `test-result-row ${r.pass ? 'pass' : 'fail'}`;
-    if (r.pass) {
-      row.innerHTML = `<span class="test-icon">✓</span> Test ${i + 1} passed`;
-    } else if (r.error) {
-      row.innerHTML = `<span class="test-icon">✗</span> Test ${i + 1} raised an exception:<pre class="traceback-block">${r.traceback}</pre>`;
-    } else {
-      row.innerHTML = `<span class="test-icon">✗</span> Test ${i + 1} failed &nbsp;—&nbsp; expected <code>${r.expected}</code>&nbsp; got <code>${r.actual}</code>`;
-    }
-    resultsPanel.appendChild(row);
-  });
-
-  // 5. Overall verdict
+  // 4. Overall verdict
   const allPass = results.every(r => r.pass);
   const passCount = results.filter(r => r.pass).length;
 
   if (allPass) {
     markInterviewSolved(problem.id);
-    feedbackBanner.textContent = `🎉 All ${results.length} tests passed!`;
+    feedbackBanner.textContent = `🎉 All ${results.length} / ${results.length} tests passed!`;
     feedbackBanner.className = 'feedback-banner correct';
+    resultsPanel.classList.add('hidden');
     triggerEmojiPop();
     // Mark the active tab solved without re-rendering (re-rendering resets the editor)
     const tabs = document.querySelectorAll('.problem-tab');
@@ -389,6 +377,28 @@ _results_json = _json_out.dumps(_results)
   } else {
     feedbackBanner.textContent = `${passCount} / ${results.length} tests passed. Keep trying.`;
     feedbackBanner.className = 'feedback-banner incorrect';
+
+    // Show first failed test with labeled args
+    const firstFail = results.find(r => !r.pass);
+    if (firstFail) {
+      const paramNames = (() => {
+        const m = problem.stub.match(/def \w+\(([^)]*)\):/);
+        return m && m[1].trim() ? m[1].split(',').map(s => s.trim()) : [];
+      })();
+      const inputStr = (firstFail.args || [])
+        .map((v, i) => paramNames[i] ? `${paramNames[i]} = ${v}` : v)
+        .join(', ');
+      resultsPanel.innerHTML = '';
+      resultsPanel.classList.remove('hidden');
+      const row = document.createElement('div');
+      row.className = 'test-result-row fail';
+      if (firstFail.error) {
+        row.innerHTML = `<span class="test-icon">✗</span> First failed &nbsp;—&nbsp; Input: <code>${inputStr}</code><pre class="traceback-block">${firstFail.traceback}</pre>`;
+      } else {
+        row.innerHTML = `<span class="test-icon">✗</span> First failed &nbsp;—&nbsp; Input: <code>${inputStr}</code> &nbsp;→&nbsp; expected <code>${firstFail.expected}</code>, got <code>${firstFail.actual}</code>`;
+      }
+      resultsPanel.appendChild(row);
+    }
   }
 }
 
