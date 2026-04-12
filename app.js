@@ -88,6 +88,15 @@ function isInterviewTopicComplete(topic) {
   const solved = getInterviewSolved();
   return topic.problems.every(p => solved.includes(p.id));
 }
+function getInterviewCode(id) {
+  const all = JSON.parse(localStorage.getItem('pylearn_interview_code') || '{}');
+  return all[id] || null;
+}
+function saveInterviewCode(id, code) {
+  const all = JSON.parse(localStorage.getItem('pylearn_interview_code') || '{}');
+  all[id] = code;
+  localStorage.setItem('pylearn_interview_code', JSON.stringify(all));
+}
 
 function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
@@ -236,8 +245,15 @@ function showInterviewTopic(topicIndex, problemIndex) {
 
   document.getElementById('interview-problem-description').textContent = problem.description;
 
-  // Editor
-  document.getElementById('interview-code-editor').value = problem.stub;
+  // Example from first test case
+  const ex = problem.tests[0];
+  const argsStr = ex.args.map(a => JSON.stringify(a)).join(', ');
+  const expectedStr = JSON.stringify(ex.expected);
+  document.getElementById('interview-problem-example').textContent =
+    `Example:\n  Input:  ${argsStr}\n  Output: ${expectedStr}`;
+
+  // Editor — restore saved code if available, otherwise show stub
+  setEditorValue('interview-code-editor', getInterviewCode(problem.id) ?? problem.stub);
   document.getElementById('interview-test-results').classList.add('hidden');
   document.getElementById('interview-test-results').innerHTML = '';
   document.getElementById('interview-feedback-banner').className = 'feedback-banner hidden';
@@ -252,6 +268,7 @@ async function runInterviewCode() {
   const topic   = INTERVIEW[state.currentInterviewTopicIndex];
   const problem = topic.problems[state.currentInterviewProblemIndex];
   const code    = document.getElementById('interview-code-editor').value;
+  saveInterviewCode(problem.id, code);
   const resultsPanel   = document.getElementById('interview-test-results');
   const feedbackBanner = document.getElementById('interview-feedback-banner');
 
@@ -290,6 +307,7 @@ async function runInterviewCode() {
 
   const testRunner = `
 import json as _json_out
+import traceback as _tb
 
 _test_cases = _test_cases_js.to_py()
 _arg_types = ${argTypesJson}
@@ -303,10 +321,12 @@ for _tc in _test_cases:
         _expected = _expected.to_py()
 
     _converted_args = []
+    _display_args = []
     for _i, _arg in enumerate(_raw_args):
         _t = _arg_types[_i] if _i < len(_arg_types) else None
         if hasattr(_arg, 'to_py'):
             _arg = _arg.to_py()
+        _display_args.append(repr(_arg))
         if _t == 'll':
             _converted_args.append(_list_to_ll(_arg) if _arg else None)
         elif _t == 'tree':
@@ -321,9 +341,10 @@ for _tc in _test_cases:
         elif _return_type == 'tree':
             _actual = _level_order(_actual) if _actual else []
         _pass = _actual == _expected
-        _results.append({'pass': bool(_pass), 'actual': repr(_actual), 'expected': repr(_expected)})
+        _results.append({'pass': bool(_pass), 'actual': repr(_actual), 'expected': repr(_expected), 'args': _display_args})
     except Exception as _e:
-        _results.append({'pass': False, 'error': str(_e)})
+        _results.append({'pass': False, 'error': str(_e), 'traceback': _tb.format_exc(), 'args': _display_args})
+        break  # stop on first error — remaining tests would fail identically
 
 _results_json = _json_out.dumps(_results)
 `;
@@ -338,29 +359,15 @@ _results_json = _json_out.dumps(_results)
     return;
   }
 
-  // 4. Display per-test results
-  resultsPanel.classList.remove('hidden');
-  results.forEach((r, i) => {
-    const row = document.createElement('div');
-    row.className = `test-result-row ${r.pass ? 'pass' : 'fail'}`;
-    if (r.pass) {
-      row.innerHTML = `<span class="test-icon">✓</span> Test ${i + 1} passed`;
-    } else if (r.error) {
-      row.innerHTML = `<span class="test-icon">✗</span> Test ${i + 1} error — ${r.error}`;
-    } else {
-      row.innerHTML = `<span class="test-icon">✗</span> Test ${i + 1} failed &nbsp;—&nbsp; expected <code>${r.expected}</code>&nbsp; got <code>${r.actual}</code>`;
-    }
-    resultsPanel.appendChild(row);
-  });
-
-  // 5. Overall verdict
+  // 4. Overall verdict
   const allPass = results.every(r => r.pass);
   const passCount = results.filter(r => r.pass).length;
 
   if (allPass) {
     markInterviewSolved(problem.id);
-    feedbackBanner.textContent = `🎉 All ${results.length} tests passed!`;
+    feedbackBanner.textContent = `🎉 All ${results.length} / ${results.length} tests passed!`;
     feedbackBanner.className = 'feedback-banner correct';
+    resultsPanel.classList.add('hidden');
     triggerEmojiPop();
     // Mark the active tab solved without re-rendering (re-rendering resets the editor)
     const tabs = document.querySelectorAll('.problem-tab');
@@ -370,6 +377,28 @@ _results_json = _json_out.dumps(_results)
   } else {
     feedbackBanner.textContent = `${passCount} / ${results.length} tests passed. Keep trying.`;
     feedbackBanner.className = 'feedback-banner incorrect';
+
+    // Show first failed test with labeled args
+    const firstFail = results.find(r => !r.pass);
+    if (firstFail) {
+      const paramNames = (() => {
+        const m = problem.stub.match(/def \w+\(([^)]*)\):/);
+        return m && m[1].trim() ? m[1].split(',').map(s => s.trim()) : [];
+      })();
+      const inputStr = (firstFail.args || [])
+        .map((v, i) => paramNames[i] ? `${paramNames[i]} = ${v}` : v)
+        .join(', ');
+      resultsPanel.innerHTML = '';
+      resultsPanel.classList.remove('hidden');
+      const row = document.createElement('div');
+      row.className = 'test-result-row fail';
+      if (firstFail.error) {
+        row.innerHTML = `<span class="test-icon">✗</span> First failed &nbsp;—&nbsp; Input: <code>${inputStr}</code><pre class="traceback-block">${firstFail.traceback}</pre>`;
+      } else {
+        row.innerHTML = `<span class="test-icon">✗</span> First failed &nbsp;—&nbsp; Input: <code>${inputStr}</code> &nbsp;→&nbsp; expected <code>${firstFail.expected}</code>, got <code>${firstFail.actual}</code>`;
+      }
+      resultsPanel.appendChild(row);
+    }
   }
 }
 
@@ -420,7 +449,7 @@ function showTutorial(topicIndex, questionIndex) {
   document.getElementById('tutorial-question-description').textContent = question.description;
 
   // Reset editor
-  document.getElementById('tutorial-code-editor').value = '';
+  setEditorValue('tutorial-code-editor', '');
   document.getElementById('tutorial-output-panel').classList.add('hidden');
   document.getElementById('tutorial-output-text').textContent = '';
   document.getElementById('tutorial-feedback-banner').className = 'feedback-banner hidden';
@@ -505,24 +534,6 @@ function showLevelSelect() {
   const container = document.getElementById('level-cards');
   container.innerHTML = '';
 
-  // Interview card
-  const interviewSolved = getInterviewSolved();
-  const interviewSolvedCount = interviewSolved.length;
-  const interviewTotal = INTERVIEW.reduce((sum, t) => sum + t.problems.length, 0);
-  const interviewCard = document.createElement('div');
-  interviewCard.className = 'level-card interview';
-  interviewCard.innerHTML = `
-    <div class="level-card-left">
-      <h3>Interview Prep</h3>
-      <p>Data structures, big-O, and LeetCode algorithm problems</p>
-    </div>
-    <div class="level-card-right">
-      <span class="level-card-count">${interviewSolvedCount} / ${interviewTotal} solved</span>
-    </div>
-  `;
-  interviewCard.addEventListener('click', showInterviewTopics);
-  container.appendChild(interviewCard);
-
   // Tutorial card (first)
   const tutorialSolved = getTutorialSolved();
   const tutorialSolvedCount = TUTORIAL.reduce(
@@ -561,6 +572,24 @@ function showLevelSelect() {
     card.addEventListener('click', () => showProblems(level));
     container.appendChild(card);
   });
+
+  // Interview card (last)
+  const interviewSolved = getInterviewSolved();
+  const interviewSolvedCount = interviewSolved.length;
+  const interviewTotal = INTERVIEW.reduce((sum, t) => sum + t.problems.length, 0);
+  const interviewCard = document.createElement('div');
+  interviewCard.className = 'level-card interview';
+  interviewCard.innerHTML = `
+    <div class="level-card-left">
+      <h3>Interview Prep</h3>
+      <p>Data structures, big-O, and LeetCode algorithm problems</p>
+    </div>
+    <div class="level-card-right">
+      <span class="level-card-count">${interviewSolvedCount} / ${interviewTotal} solved</span>
+    </div>
+  `;
+  interviewCard.addEventListener('click', showInterviewTopics);
+  container.appendChild(interviewCard);
 }
 
 function levelDescription(level) {
@@ -605,6 +634,12 @@ async function loadPyodide() {
   script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js';
   script.onload = async () => {
     state.pyodide = await globalThis.loadPyodide();
+    // Pre-import common stdlib so students don't need to import in interview problems
+    state.pyodide.runPython(`
+from collections import Counter, defaultdict, deque
+from heapq import heappush, heappop, heapify
+import math
+`);
     state.pyodideReady = true;
     ['btn-run', 'btn-run-tutorial', 'btn-run-interview'].forEach(id => {
       const btn = document.getElementById(id);
@@ -632,7 +667,7 @@ function showEditor(problemId) {
     hintEl.classList.add('hidden');
   }
 
-  document.getElementById('code-editor').value = '';
+  setEditorValue('code-editor', '');
   document.getElementById('output-panel').classList.add('hidden');
   document.getElementById('output-text').textContent = '';
   document.getElementById('feedback-banner').className = 'feedback-banner hidden';
@@ -696,12 +731,79 @@ sys.stdout = io.StringIO()
   }
 }
 
+// ─── Keyboard helpers for all code editors ───────────────────────────────────
+document.addEventListener('keydown', e => {
+  const el = e.target;
+  if (!el.classList.contains('code-editor')) return;
+
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const start = el.selectionStart;
+    const end   = el.selectionEnd;
+    if (e.shiftKey) {
+      // Dedent: remove up to 4 leading spaces from the current line
+      const lineStart = el.value.lastIndexOf('\n', start - 1) + 1;
+      const before    = el.value.slice(lineStart);
+      const spaces    = before.match(/^ {1,4}/)?.[0]?.length ?? 0;
+      if (spaces > 0) {
+        el.value = el.value.slice(0, lineStart) + el.value.slice(lineStart + spaces);
+        el.selectionStart = el.selectionEnd = Math.max(lineStart, start - spaces);
+      }
+    } else {
+      el.value = el.value.slice(0, start) + '    ' + el.value.slice(end);
+      el.selectionStart = el.selectionEnd = start + 4;
+    }
+  }
+
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    // Find the start of the current line
+    const lineStart = el.value.lastIndexOf('\n', start - 1) + 1;
+    // Extract leading whitespace from the current line
+    const indent = el.value.slice(lineStart).match(/^[ \t]*/)[0];
+    el.value = el.value.slice(0, start) + '\n' + indent + el.value.slice(end);
+    el.selectionStart = el.selectionEnd = start + 1 + indent.length;
+  }
+});
+
+// ─── Set editor value and sync line numbers ───────────────────────────────────
+function setEditorValue(id, value) {
+  const el = document.getElementById(id);
+  el.value = value;
+  el.dispatchEvent(new Event('input'));
+}
+
+// ─── Line numbers for all code editors ───────────────────────────────────────
+function initLineNumbers(ta) {
+  const wrap = document.createElement('div');
+  wrap.className = 'editor-wrap';
+  ta.parentNode.insertBefore(wrap, ta);
+  const nums = document.createElement('div');
+  nums.className = 'line-nums';
+  wrap.appendChild(nums);
+  wrap.appendChild(ta);
+
+  function update() {
+    const count = ta.value.split('\n').length;
+    nums.innerHTML = Array.from({length: count}, (_, i) => `<span>${i + 1}</span>`).join('');
+    nums.scrollTop = ta.scrollTop;
+  }
+  ta.addEventListener('input', update);
+  ta.addEventListener('scroll', () => { nums.scrollTop = ta.scrollTop; });
+  update();
+}
+
 // ─── Bootstrap ───────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.code-editor').forEach(initLineNumbers);
+
   document.getElementById('btn-clear-history').addEventListener('click', () => {
     localStorage.removeItem('pylearn_solved');
     localStorage.removeItem('pylearn_tutorial_solved');
     localStorage.removeItem('pylearn_interview_solved');
+    localStorage.removeItem('pylearn_interview_code');
     showLevelSelect();
   });
   showLevelSelect();

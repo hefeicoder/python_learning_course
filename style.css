@@ -145,22 +145,47 @@ body {
 #editor-title { font-size: 1.3rem; margin-bottom: 0.75rem; }
 .editor-description { color: #4a5568; margin-bottom: 0.5rem; line-height: 1.6; }
 .editor-hint { color: #d69e2e; font-style: italic; margin-bottom: 0.5rem; font-size: 0.9rem; }
+.editor-wrap {
+  display: flex;
+  align-items: stretch;
+  background: #1a202c;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  margin: 0.75rem 0;
+  overflow: hidden;
+}
+.editor-wrap:focus-within { border-color: #4299e1; }
+.line-nums {
+  background: #1a202c;
+  color: #4a5568;
+  font-family: "Fira Code", "Courier New", monospace;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  padding: 1rem 0.6rem 1rem 0.75rem;
+  text-align: right;
+  user-select: none;
+  overflow: hidden;
+  border-right: 1px solid #2d3748;
+  min-width: 2.75rem;
+}
+.line-nums span { display: block; }
 .code-editor {
   width: 100%;
   min-height: 320px;
   font-family: "Fira Code", "Courier New", monospace;
   font-size: 0.95rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
+  border: none;
+  border-radius: 0;
   padding: 1rem;
   resize: vertical;
   outline: none;
   background: #1a202c;
   color: #e2e8f0;
-  margin: 0.75rem 0;
   line-height: 1.6;
+  flex: 1;
+  min-width: 0;
 }
-.code-editor:focus { border-color: #4299e1; }
+.code-editor:focus { border-color: transparent; }
 .output-panel { margin-top: 1rem; }
 .output-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #718096; margin-bottom: 0.25rem; }
 #output-text {
@@ -374,6 +399,19 @@ body {
 }
 .leetcode-link:hover { text-decoration: underline; }
 
+/* ── Problem example block ───────────────────────────────────────────────── */
+.problem-example {
+  background: #edf2f7;
+  color: #2d3748;
+  font-family: "Fira Code", "Courier New", monospace;
+  font-size: 0.88rem;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  border-left: 3px solid #4299e1;
+  white-space: pre;
+  margin-bottom: 0.5rem;
+}
+
 /* ── Test results panel ──────────────────────────────────────────────────── */
 .interview-test-results {
   margin-top: 1rem;
@@ -393,3 +431,14 @@ body {
 .test-result-row.pass { background: #f0fff4; color: #276749; }
 .test-result-row.fail { background: #fff5f5; color: #9b2c2c; }
 .test-icon { font-weight: 700; flex-shrink: 0; }
+.traceback-block {
+  margin-top: 0.4rem;
+  background: #2d3748;
+  color: #feb2b2;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  width: 100%;
+}

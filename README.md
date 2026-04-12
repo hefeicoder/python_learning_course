@@ -1,68 +1,82 @@
 # Learn Python!
 
-A browser-based Python learning site for kids. Pick a difficulty, solve coding problems, and get instant feedback — no installation required.
+A browser-based Python learning site. Work through beginner problems, follow interactive tutorials, and practice data-structure interview questions — all with instant feedback and no installation required.
 
 ![screenshot](https://raw.githubusercontent.com/hefeicoder/python_learning_course/main/preview.png)
 
 ## Features
 
-- **Three difficulty levels** — Beginner, Intermediate, and Advanced
-- **70 problems** covering Python fundamentals through advanced topics
-- **In-browser Python** — powered by [Pyodide](https://pyodide.org) (no server needed)
-- **Instant feedback** — runs your code and checks the output
-- **Cheat prevention** — problems that require specific functions (e.g. `len()`, `def`, `class`) verify you used them
-- **Progress tracking** — solved problems are saved in your browser via localStorage
+- **Three learning tracks** — classic problems (Beginner/Intermediate/Advanced), guided tutorials, and Interview Prep
+- **In-browser Python** — powered by [Pyodide](https://pyodide.org) (WebAssembly); no server, no setup
+- **Common stdlib pre-imported** — `Counter`, `defaultdict`, `deque`, `heapq`, and `math` are always available so students focus on problem-solving, not imports
+- **Line-numbered code editor** — with Tab-to-indent and auto-indent on Enter
+- **Progress tracking** — solved problems saved in `localStorage`; last submitted code per interview problem is also restored on revisit
 - **Zero dependencies** — pure HTML, CSS, and JavaScript; works offline after first load
 
-## Problem Curriculum
+## Learning Tracks
 
-### Beginner (1.1 – 1.40) — *A step-by-step tutorial*
+### Classic Problems (78 total)
 
-| Part | Topics |
-|------|--------|
-| 1 — Printing | `print()`, printing numbers vs strings |
-| 2 — Variables | assignment, string variables, math with variables, updating values |
-| 3 — Strings | concatenation, repetition, `len`, indexing, slicing |
-| 4 — String Methods | `.upper()`, `.lower()`, `.strip()`, `.replace()`, f-strings |
-| 5 — Arithmetic | `+` `-` `*` `/` `//` `%` `**`, order of operations |
-| 6 — Math Functions | `abs()`, `round()`, `max()`, `min()` |
-| 7 — Types & Conversion | `type()`, `int()`, `float()`, `str()` |
-| 8 — Lists Intro | create, index, negative index, `len` |
+Output-based grading: your code's `stdout` is compared against the expected output. For concept-specific problems the grader also checks that required keywords appear in your code (e.g. `def`, `len(`, `class`).
 
-### Intermediate (2.1 – 2.30)
+| Level | Count | Topics |
+|-------|-------|--------|
+| Beginner | 40 | Printing, variables, strings, lists, arithmetic, type conversion |
+| Intermediate | 30 | Loops, functions, conditionals, sorting, recursion |
+| Advanced | 8 | Dictionaries, classes, list comprehensions, error handling |
 
-Loops, lists, functions, conditionals, string algorithms, sorting, recursion basics.
+### Tutorial (13 topics, 52 exercises)
 
-### Advanced (3.1 – 3.8)
+Each topic has a **Learn** panel (what it is, when to use it, a worked example) followed by short free-form practice exercises graded by output.
 
-Dictionaries, classes, list comprehensions, error handling.
+Topics: Your First Line of Code · Numbers and Math · Variables · Booleans · Strings · Lists · Dictionaries · Functions · Loops · Conditionals · Classes · Comprehensions · Error Handling
+
+### Interview Prep (9 topics, 45 problems)
+
+Function-based grading: your code is called with test inputs and the return value is compared. Each problem links to its LeetCode page and shows an example input/output taken from the first test case.
+
+| Topic | Problems (4 easy + 1 medium) |
+|-------|------------------------------|
+| Array | Two Sum · Best Time to Buy and Sell Stock · Contains Duplicate · Maximum Subarray · Product of Array Except Self |
+| Hash Map | Valid Anagram · Ransom Note · Word Pattern · First Unique Character · Longest Consecutive Sequence |
+| Stack | Valid Parentheses · Baseball Game · Remove Outermost Parentheses · Backspace String Compare · Daily Temperatures |
+| Queue & Deque | Number of Students Unable to Eat Lunch · Time Needed to Buy Tickets · Remove Adjacent Duplicates · Number of Recent Calls · Sliding Window Maximum |
+| Heap | Last Stone Weight · Take Gifts From the Richest Pile · K Weakest Rows · Top K Frequent Elements · Kth Largest Element |
+| Linked List | Reverse Linked List · Merge Two Sorted Lists · Remove Elements · Middle of the Linked List · Remove Nth From End |
+| Binary Tree | Maximum Depth · Invert Binary Tree · Symmetric Tree · Path Sum · Level Order Traversal |
+| Graph | Find the Town Judge · Find if Path Exists · Island Perimeter · Max Area of Island · Number of Islands |
+| Sorting & Binary Search | Binary Search · Search Insert Position · Squares of a Sorted Array · Sort Colors · Find Minimum in Rotated Sorted Array |
+
+**Test result display:** after running, shows `(x/y) tests passed` and, on failure, the first failing input with labeled parameter names (e.g. `nums = [3,2,4], target = 6`) plus the expected and actual values. Each problem has 8–10 test cases covering edge cases (empty input, negatives, duplicates, boundary values).
 
 ## Running Locally
 
-No build step needed. Just serve the files with any static server:
+No build step needed. Use the included server script:
 
 ```bash
-python3 -m http.server 8080
+python3 server.py 8080
 ```
 
 Then open [http://localhost:8080](http://localhost:8080).
 
-Or use any other static file server (VS Code Live Server, `npx serve`, etc.).
+The script sets the `Cross-Origin-Opener-Policy` and `Cross-Origin-Embedder-Policy` headers required by Pyodide. Plain `python3 -m http.server` will not work because those headers are missing.
 
 ## How It Works
 
 - Python runs entirely in the browser via **Pyodide** (WebAssembly)
-- Your code's `stdout` is captured and compared against the expected output
-- For problems that teach specific concepts, the grader also checks that required keywords (e.g. `len(`, `def `, `class `) appear in your code
-- Progress is stored in `localStorage` under the key `pylearn_solved`
+- On load, common stdlib names are pre-imported into the Pyodide global namespace so they are always available regardless of problem order
+- **Classic / Tutorial grading:** `stdout` is captured into a `StringIO` buffer and compared against `expectedOutput`
+- **Interview grading:** user code is executed to define the function, then a test runner calls it with each test case's `args` and compares the return value to `expected`; linked-list and tree arguments are automatically converted to/from `ListNode`/`TreeNode` objects
+- Progress is stored in `localStorage` under the key `pylearn_solved`; last-submitted interview code is stored under `pylearn_interview_code`
 
 ## Project Structure
 
 ```
-index.html   — app shell, three views (level select → problem list → editor)
-app.js       — view routing, Pyodide loading, code execution and grading
-data.js      — all problems (id, title, description, hint, expectedOutput, requiredKeywords)
+index.html   — app shell; five views (level select, problems, editor, tutorial, interview)
+app.js       — view routing, Pyodide loading, code execution, grading, editor behaviour
+data.js      — all content: PROBLEMS (classic), TUTORIAL, INTERVIEW
 style.css    — styles
+server.py    — minimal static file server with required COOP/COEP headers
 ```
 
 ## License
