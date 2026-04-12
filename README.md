@@ -2,7 +2,9 @@
 
 A browser-based Python learning site. Work through beginner problems, follow interactive tutorials, and practice data-structure interview questions — all with instant feedback and no installation required.
 
-![screenshot](https://raw.githubusercontent.com/hefeicoder/python_learning_course/main/preview.png)
+![Home screen](screenshot-home.png)
+
+![Interview editor](screenshot-interview.png)
 
 ## Features
 
