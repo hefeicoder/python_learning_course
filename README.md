@@ -1,6 +1,16 @@
-# Learn Python!
+# Python Self-Learning: From Zero to Interview-Ready
 
 A browser-based Python learning site. Work through beginner problems, follow interactive tutorials, and practice data-structure interview questions — all with instant feedback and no installation required.
+
+## Who is this for?
+
+| Section | Problems | Who it's for |
+|---------|----------|--------------|
+| **Tutorial** | 52 exercises | Complete beginners — never written a line of code |
+| **Beginner** | 40 problems | Just starting out — learning syntax and basic concepts |
+| **Intermediate** | 30 problems | Getting comfortable — loops, functions, and algorithms |
+| **Advanced** | 8 problems | Solid foundation — OOP, comprehensions, error handling |
+| **Interview Prep** | 45 problems | Job seekers — LeetCode-style data structure problems |
 
 ![Home screen](screenshot-home.png)
 
