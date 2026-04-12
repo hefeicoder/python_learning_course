@@ -624,6 +624,12 @@ async function loadPyodide() {
   script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js';
   script.onload = async () => {
     state.pyodide = await globalThis.loadPyodide();
+    // Pre-import common stdlib so students don't need to import in interview problems
+    state.pyodide.runPython(`
+from collections import Counter, defaultdict, deque
+from heapq import heappush, heappop, heapify
+import math
+`);
     state.pyodideReady = true;
     ['btn-run', 'btn-run-tutorial', 'btn-run-interview'].forEach(id => {
       const btn = document.getElementById(id);

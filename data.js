@@ -943,6 +943,7 @@ for i, v in enumerate([2, 7, 11]):
           { args: ["abba", "dog cat cat dog"],  expected: true  },
           { args: ["abba", "dog cat cat fish"], expected: false },
           { args: ["aaaa", "dog cat cat dog"],  expected: false },
+          { args: ["ab",   "dog dog"],          expected: false },
         ],
       },
       {
