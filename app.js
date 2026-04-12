@@ -245,6 +245,13 @@ function showInterviewTopic(topicIndex, problemIndex) {
 
   document.getElementById('interview-problem-description').textContent = problem.description;
 
+  // Example from first test case
+  const ex = problem.tests[0];
+  const argsStr = ex.args.map(a => JSON.stringify(a)).join(', ');
+  const expectedStr = JSON.stringify(ex.expected);
+  document.getElementById('interview-problem-example').textContent =
+    `Example:\n  Input:  ${argsStr}\n  Output: ${expectedStr}`;
+
   // Editor — restore saved code if available, otherwise show stub
   setEditorValue('interview-code-editor', getInterviewCode(problem.id) ?? problem.stub);
   document.getElementById('interview-test-results').classList.add('hidden');

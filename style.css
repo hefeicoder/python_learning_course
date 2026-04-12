@@ -399,6 +399,19 @@ body {
 }
 .leetcode-link:hover { text-decoration: underline; }
 
+/* ── Problem example block ───────────────────────────────────────────────── */
+.problem-example {
+  background: #edf2f7;
+  color: #2d3748;
+  font-family: "Fira Code", "Courier New", monospace;
+  font-size: 0.88rem;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  border-left: 3px solid #4299e1;
+  white-space: pre;
+  margin-bottom: 0.5rem;
+}
+
 /* ── Test results panel ──────────────────────────────────────────────────── */
 .interview-test-results {
   margin-top: 1rem;
