@@ -1230,37 +1230,75 @@ def max_window(nums, k):
         ],
       },
       {
-        id: "ds4_2", title: "Time Needed to Buy Tickets", difficulty: "easy",
-        leetcode: { number: 2073, url: "https://leetcode.com/problems/time-needed-to-buy-tickets/" },
-        description: "People stand in a queue to buy tickets. tickets[i] is how many tickets person i wants. Each round, one ticket is sold per person. Return the time for person at index k to finish buying all their tickets.",
-        stub: "def time_to_buy_tickets(tickets, k):\n    pass",
-        functionName: "time_to_buy_tickets",
+        id: "ds4_2", title: "Implement Queue using Stacks", difficulty: "easy",
+        leetcode: { number: 232, url: "https://leetcode.com/problems/implement-queue-using-stacks/" },
+        description: "Implement a FIFO queue using only two stacks. Support push(x), pop(), peek(), and empty(). Each operation should work correctly even though stacks are LIFO.",
+        stub: `class MyQueue:
+    def __init__(self):
+        pass
+
+    def push(self, x: int) -> None:
+        pass
+
+    def pop(self) -> int:
+        pass
+
+    def peek(self) -> int:
+        pass
+
+    def empty(self) -> bool:
+        pass
+
+def queue_using_stacks(operations, values):
+    q = MyQueue()
+    return [getattr(q, op)(*([v] if v != -1 else [])) for op, v in zip(operations, values)]`,
+        functionName: "queue_using_stacks",
         tests: [
-          { args: [[2,3,2], 2],    expected: 6 },
-          { args: [[5,1,1,1], 0],  expected: 8 },
-          { args: [[1], 0],        expected: 1 },
-          { args: [[1,2,3], 0],    expected: 1 },
-          { args: [[1,2,3], 2],    expected: 6 },
-          { args: [[3,1,2], 1],    expected: 2 },
-          { args: [[1,1,1,1], 3],  expected: 4 },
-          { args: [[2,2,2], 1],    expected: 5 },
+          { args: [["push","push","peek","pop","empty"], [1,2,-1,-1,-1]], expected: [null,null,1,1,false] },
+          { args: [["push","empty"], [1,-1]],                             expected: [null,false] },
+          { args: [["push","pop","empty"], [1,-1,-1]],                    expected: [null,1,true] },
+          { args: [["push","push","pop","peek"], [1,2,-1,-1]],            expected: [null,null,1,2] },
+          { args: [["push","push","push","pop","pop"], [1,2,3,-1,-1]],    expected: [null,null,null,1,2] },
+          { args: [["push","peek","pop","empty"], [5,-1,-1,-1]],          expected: [null,5,5,true] },
+          { args: [["push","push","push","peek"], [10,20,30,-1]],         expected: [null,null,null,10] },
+          { args: [["push","pop","push","peek","empty"], [1,-1,2,-1,-1]], expected: [null,1,null,2,false] },
+          { args: [["push","push","pop","push","pop","pop"], [1,2,-1,3,-1,-1]], expected: [null,null,1,null,2,3] },
         ],
       },
       {
-        id: "ds4_3", title: "Remove All Adjacent Duplicates In String", difficulty: "easy",
-        leetcode: { number: 1047, url: "https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/" },
-        description: "Given a string s, repeatedly remove adjacent duplicate characters until no more can be removed. Return the final string. Use a stack/deque for an efficient one-pass solution.",
-        stub: "def remove_duplicates(s):\n    pass",
-        functionName: "remove_duplicates",
+        id: "ds4_3", title: "Implement Stack using Queues", difficulty: "easy",
+        leetcode: { number: 225, url: "https://leetcode.com/problems/implement-stack-using-queues/" },
+        description: "Implement a LIFO stack using only standard queue operations (append to back, pop from front). Support push(x), pop(), top(), and empty().",
+        stub: `class MyStack:
+    def __init__(self):
+        pass
+
+    def push(self, x: int) -> None:
+        pass
+
+    def pop(self) -> int:
+        pass
+
+    def top(self) -> int:
+        pass
+
+    def empty(self) -> bool:
+        pass
+
+def stack_using_queues(operations, values):
+    s = MyStack()
+    return [getattr(s, op)(*([v] if v != -1 else [])) for op, v in zip(operations, values)]`,
+        functionName: "stack_using_queues",
         tests: [
-          { args: ["abbaca"],  expected: "ca"   },
-          { args: ["azxxzy"],  expected: "ay"   },
-          { args: ["aaa"],     expected: "a"    },
-          { args: ["a"],       expected: "a"    },
-          { args: ["aa"],      expected: ""     },
-          { args: ["abcd"],    expected: "abcd" },
-          { args: ["abba"],    expected: ""     },
-          { args: ["abccba"],  expected: ""     },
+          { args: [["push","push","top","pop","empty"], [1,2,-1,-1,-1]], expected: [null,null,2,2,false] },
+          { args: [["push","empty"], [1,-1]],                            expected: [null,false] },
+          { args: [["push","pop","empty"], [1,-1,-1]],                   expected: [null,1,true] },
+          { args: [["push","push","pop","top"], [1,2,-1,-1]],            expected: [null,null,2,1] },
+          { args: [["push","push","push","pop","pop"], [1,2,3,-1,-1]],   expected: [null,null,null,3,2] },
+          { args: [["push","top","pop","empty"], [5,-1,-1,-1]],          expected: [null,5,5,true] },
+          { args: [["push","push","push","top"], [10,20,30,-1]],         expected: [null,null,null,30] },
+          { args: [["push","pop","push","top","empty"], [1,-1,2,-1,-1]], expected: [null,1,null,2,false] },
+          { args: [["push","push","pop","push","pop","top"], [1,2,-1,3,-1,-1]], expected: [null,null,2,null,3,1] },
         ],
       },
       {
