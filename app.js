@@ -247,8 +247,9 @@ function showInterviewTopic(topicIndex, problemIndex) {
 
   // Examples from first 2-3 test cases with labeled param names
   const paramNames = (() => {
-    const m = problem.stub.match(/def \w+\(([^)]*)\):/);
-    return m && m[1].trim() ? m[1].split(',').map(s => s.trim()) : [];
+    const re = new RegExp(`def ${problem.functionName}\\(([^)]*)\\):`);
+    const m = problem.stub.match(re);
+    return m && m[1].trim() ? m[1].split(',').map(s => s.trim().split(':')[0].trim()) : [];
   })();
   const exampleLines = problem.tests.slice(0, 3).map((ex, i) => {
     const inputStr = ex.args
@@ -388,8 +389,9 @@ _results_json = _json_out.dumps(_results)
     const firstFail = results.find(r => !r.pass);
     if (firstFail) {
       const paramNames = (() => {
-        const m = problem.stub.match(/def \w+\(([^)]*)\):/);
-        return m && m[1].trim() ? m[1].split(',').map(s => s.trim()) : [];
+        const re = new RegExp(`def ${problem.functionName}\\(([^)]*)\\):`);
+        const m = problem.stub.match(re);
+        return m && m[1].trim() ? m[1].split(',').map(s => s.trim().split(':')[0].trim()) : [];
       })();
       const inputStr = (firstFail.args || [])
         .map((v, i) => paramNames[i] ? `${paramNames[i]} = ${v}` : v)
