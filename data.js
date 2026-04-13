@@ -1394,20 +1394,30 @@ print(heapq.heappop(tasks))  # (1, 'urgent')`,
         ],
       },
       {
-        id: "ds5_2", title: "Take Gifts From the Richest Pile", difficulty: "easy",
-        leetcode: { number: 2558, url: "https://leetcode.com/problems/take-gifts-from-the-richest-pile/" },
-        description: "Each second, take gifts from the richest pile and leave floor(sqrt(pile)) gifts. After k seconds, return the total number of gifts remaining.",
-        stub: "import math\n\ndef pick_gifts(gifts, k):\n    pass",
-        functionName: "pick_gifts",
+        id: "ds5_2", title: "Kth Largest Element in a Stream", difficulty: "easy",
+        leetcode: { number: 703, url: "https://leetcode.com/problems/kth-largest-element-in-a-stream/" },
+        description: "Design a class that finds the kth largest element in a stream. Initialize with k and an initial list of numbers, then implement add(val) which inserts val and returns the kth largest element in the stream so far.",
+        stub: `class KthLargest:
+    def __init__(self, k: int, nums: list):
+        pass
+
+    def add(self, val: int) -> int:
+        pass
+
+def kth_largest_stream(k, nums, stream):
+    obj = KthLargest(k, nums)
+    return [obj.add(val) for val in stream]`,
+        functionName: "kth_largest_stream",
         tests: [
-          { args: [[25,64,9,4,100], 4], expected: 29 },
-          { args: [[1,1,1,1], 4],       expected: 4  },
-          { args: [[4], 1],             expected: 2  },
-          { args: [[1], 1],             expected: 1  },
-          { args: [[9], 1],             expected: 3  },
-          { args: [[4,9,16,25], 2],     expected: 22 },
-          { args: [[1,2,3], 1],         expected: 4  },
-          { args: [[100,100,100], 3],   expected: 30 },
+          { args: [3, [4,5,8,2], [3,5,10,9,4]],  expected: [4,5,5,8,8] },
+          { args: [1, [1],        [2,3,4]],         expected: [2,3,4]    },
+          { args: [2, [1,2],      [3,4,5]],         expected: [2,3,4]    },
+          { args: [3, [1,2,3],    [4,0,5]],         expected: [2,2,3]    },
+          { args: [2, [5,10],     [1,15,3]],        expected: [5,10,10]  },
+          { args: [3, [2,4,6,8],  [1,5,7]],         expected: [4,5,6]    },
+          { args: [2, [3,3,3],    [3,3]],            expected: [3,3]      },
+          { args: [1, [2,3,1],    [5,4,6]],          expected: [5,5,6]    },
+          { args: [3, [1,2,3,4],  [2,5,1]],          expected: [2,3,3]    },
         ],
       },
       {
@@ -1428,7 +1438,7 @@ print(heapq.heappop(tasks))  # (1, 'urgent')`,
         ],
       },
       {
-        id: "ds5_4", title: "Top K Frequent Elements", difficulty: "easy",
+        id: "ds5_4", title: "Top K Frequent Elements", difficulty: "medium",
         leetcode: { number: 347, url: "https://leetcode.com/problems/top-k-frequent-elements/" },
         description: "Given an integer array nums and an integer k, return the k most frequent elements sorted in ascending order.",
         stub: "def top_k_frequent(nums, k):\n    pass",

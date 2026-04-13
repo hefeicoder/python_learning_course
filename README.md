@@ -55,7 +55,7 @@ Function-based grading: your code is called with test inputs and the return valu
 | Hash Map | Valid Anagram · Ransom Note · Word Pattern · First Unique Character · Longest Consecutive Sequence |
 | Stack | Valid Parentheses · Baseball Game · Remove Outermost Parentheses · Backspace String Compare · Daily Temperatures |
 | Queue & Deque | Number of Students Unable to Eat Lunch · Implement Queue using Stacks · Implement Stack using Queues · Number of Recent Calls · Design Circular Queue |
-| Heap | Last Stone Weight · Take Gifts From the Richest Pile · K Weakest Rows · Top K Frequent Elements · Kth Largest Element |
+| Heap | Last Stone Weight · Kth Largest in a Stream · K Weakest Rows · Top K Frequent Elements · Kth Largest Element |
 | Linked List | Reverse Linked List · Merge Two Sorted Lists · Remove Elements · Middle of the Linked List · Remove Nth From End |
 | Binary Tree | Maximum Depth · Invert Binary Tree · Symmetric Tree · Path Sum · Level Order Traversal |
 | Graph | Find the Town Judge · Find if Path Exists · Island Perimeter · Max Area of Island · Number of Islands |
