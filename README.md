@@ -1,6 +1,18 @@
-# Learn Python!
+# Python Self-Learning: From Zero to Interview-Ready
+
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 A browser-based Python learning site. Work through beginner problems, follow interactive tutorials, and practice data-structure interview questions — all with instant feedback and no installation required.
+
+## Who is this for?
+
+| Section | Problems | Who it's for |
+|---------|----------|--------------|
+| **Tutorial** | 52 exercises | Complete beginners — never written a line of code |
+| **Beginner** | 40 problems | Just starting out — learning syntax and basic concepts |
+| **Intermediate** | 30 problems | Getting comfortable — loops, functions, and algorithms |
+| **Advanced** | 8 problems | Solid foundation — OOP, comprehensions, error handling |
+| **Interview Prep** | 53 problems | Job seekers — LeetCode-style data structure problems |
 
 ![Home screen](screenshot-home.png)
 
@@ -33,23 +45,65 @@ Each topic has a **Learn** panel (what it is, when to use it, a worked example) 
 
 Topics: Your First Line of Code · Numbers and Math · Variables · Booleans · Strings · Lists · Dictionaries · Functions · Loops · Conditionals · Classes · Comprehensions · Error Handling
 
-### Interview Prep (9 topics, 45 problems)
+### Interview Prep — Classic Data Structures (9 topics, 53 problems)
 
-Function-based grading: your code is called with test inputs and the return value is compared. Each problem links to its LeetCode page and shows an example input/output taken from the first test case.
+Function-based grading: your code is called with test inputs and the return value is compared. Each problem links to its LeetCode page and shows 2–3 labeled examples. After running, shows `(x/y) tests passed` and, on failure, the first failing input with labeled parameter names. Each problem has 8–10 test cases covering edge cases.
 
-| Topic | Problems (4 easy + 1 medium) |
-|-------|------------------------------|
-| Array | Two Sum · Best Time to Buy and Sell Stock · Contains Duplicate · Maximum Subarray · Product of Array Except Self |
-| Hash Map | Valid Anagram · Ransom Note · Word Pattern · First Unique Character · Longest Consecutive Sequence |
-| Stack | Valid Parentheses · Baseball Game · Remove Outermost Parentheses · Backspace String Compare · Daily Temperatures |
-| Queue & Deque | Number of Students Unable to Eat Lunch · Time Needed to Buy Tickets · Remove Adjacent Duplicates · Number of Recent Calls · Sliding Window Maximum |
-| Heap | Last Stone Weight · Take Gifts From the Richest Pile · K Weakest Rows · Top K Frequent Elements · Kth Largest Element |
-| Linked List | Reverse Linked List · Merge Two Sorted Lists · Remove Elements · Middle of the Linked List · Remove Nth From End |
-| Binary Tree | Maximum Depth · Invert Binary Tree · Symmetric Tree · Path Sum · Level Order Traversal |
-| Graph | Find the Town Judge · Find if Path Exists · Island Perimeter · Max Area of Island · Number of Islands |
-| Sorting & Binary Search | Binary Search · Search Insert Position · Squares of a Sorted Array · Sort Colors · Find Minimum in Rotated Sorted Array |
-
-**Test result display:** after running, shows `(x/y) tests passed` and, on failure, the first failing input with labeled parameter names (e.g. `nums = [3,2,4], target = 6`) plus the expected and actual values. Each problem has 8–10 test cases covering edge cases (empty input, negatives, duplicates, boundary values).
+| Topic | Problem | LC# | Difficulty | Pattern |
+|-------|---------|-----|------------|---------|
+| **Array** | Two Sum | 1 | Easy | Hash map for complement lookup |
+| | Best Time to Buy and Sell Stock | 121 | Easy | Running minimum + max profit |
+| | Contains Duplicate | 217 | Easy | Hash set membership |
+| | Maximum Subarray | 53 | Easy | Kadane's algorithm |
+| | Product of Array Except Self | 238 | Medium | Prefix / suffix products |
+| **Hash Map** | Valid Anagram | 242 | Easy | Character frequency count |
+| | Ransom Note | 383 | Easy | Frequency subset check |
+| | Word Pattern | 290 | Easy | Bijection mapping |
+| | First Unique Character | 387 | Easy | Ordered frequency count |
+| | Longest Consecutive Sequence | 128 | Medium | Hash set + sequence-start detection |
+| **Stack** | Valid Parentheses | 20 | Easy | Matching brackets with stack |
+| | Baseball Game | 682 | Easy | Stack simulation |
+| | Remove Outermost Parentheses | 1021 | Easy | Depth tracking with stack |
+| | Backspace String Compare | 844 | Easy | Stack to process deletions |
+| | Daily Temperatures | 739 | Medium | Monotonic stack |
+| **Queue & Deque** | Number of Students Unable to Eat Lunch | 1700 | Easy | Queue simulation |
+| | Implement Queue using Stacks | 232 | Easy | Two-stack queue design |
+| | Implement Stack using Queues | 225 | Easy | Queue-based stack design |
+| | Number of Recent Calls | 933 | Easy | Sliding window with deque |
+| | Design Circular Queue | 622 | Medium | Circular buffer design |
+| **Heap** | Last Stone Weight | 1046 | Easy | Max-heap simulation (negate) |
+| | Kth Largest Element in a Stream | 703 | Easy | Min-heap of size k |
+| | K Weakest Rows in a Matrix | 1337 | Easy | Heap with tuple keys |
+| | Top K Frequent Elements | 347 | Medium | Heap + frequency count |
+| | Kth Largest Element in an Array | 215 | Medium | Min-heap of size k / quickselect |
+| **Linked List** | Reverse Linked List | 206 | Easy | In-place pointer reversal |
+| | Merge Two Sorted Lists | 21 | Easy | Merge with dummy head |
+| | Remove Linked List Elements | 203 | Easy | Dummy head traversal |
+| | Middle of the Linked List | 876 | Easy | Slow / fast pointer |
+| | Remove Nth Node From End | 19 | Medium | Two-pointer gap of n |
+| **Binary Tree** | Maximum Depth of Binary Tree | 104 | Easy | DFS recursion |
+| | Invert Binary Tree | 226 | Easy | Recursive left/right swap |
+| | Symmetric Tree | 101 | Easy | Mirror comparison DFS |
+| | Path Sum | 112 | Easy | DFS with running sum |
+| | Lowest Common Ancestor of BST | 235 | Easy | BST property navigation |
+| | Binary Tree Level Order Traversal | 102 | Medium | BFS level-by-level |
+| | Validate Binary Search Tree | 98 | Medium | DFS with min/max bounds |
+| **Graph** | Flood Fill | 733 | Easy | Grid DFS |
+| | Max Area of Island | 695 | Easy | Grid DFS + area counting |
+| | Number of Provinces | 547 | Medium | Connected components DFS |
+| | Number of Islands | 200 | Medium | Classic grid graph DFS/BFS |
+| | Rotting Oranges | 994 | Medium | Multi-source BFS |
+| | Course Schedule | 207 | Medium | Cycle detection (topological sort) |
+| | Course Schedule II | 210 | Medium | Topological sort ordering |
+| **Sorting & Binary Search** | Binary Search | 704 | Easy | Classic lo/hi template |
+| | Search Insert Position | 35 | Easy | Lower-bound binary search |
+| | First Bad Version | 278 | Easy | Binary search on answer |
+| | Sort Colors | 75 | Easy | Dutch National Flag (3-way partition) |
+| | Find Minimum in Rotated Sorted Array | 153 | Medium | Rotated array binary search |
+| | Search in Rotated Sorted Array | 33 | Medium | Rotated array + target |
+| | Find First and Last Position of Element | 34 | Medium | Left / right boundary search |
+| | Merge Intervals | 56 | Medium | Sort by start + sweep to merge |
+| | Search a 2D Matrix | 74 | Medium | Flatten 2D to 1D binary search |
 
 ## Running Locally
 
