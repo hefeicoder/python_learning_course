@@ -57,7 +57,7 @@ Function-based grading: your code is called with test inputs and the return valu
 | Queue & Deque | Number of Students Unable to Eat Lunch · Implement Queue using Stacks · Implement Stack using Queues · Number of Recent Calls · Design Circular Queue |
 | Heap | Last Stone Weight · Kth Largest in a Stream · K Weakest Rows · Top K Frequent Elements · Kth Largest Element |
 | Linked List | Reverse Linked List · Merge Two Sorted Lists · Remove Elements · Middle of the Linked List · Remove Nth From End |
-| Binary Tree | Maximum Depth · Invert Binary Tree · Symmetric Tree · Path Sum · Level Order Traversal |
+| Binary Tree | Maximum Depth · Invert Binary Tree · Symmetric Tree · Path Sum · Level Order Traversal · Lowest Common Ancestor of BST · Validate BST |
 | Graph | Find the Town Judge · Find if Path Exists · Island Perimeter · Max Area of Island · Number of Islands |
 | Sorting & Binary Search | Binary Search · Search Insert Position · Squares of a Sorted Array · Sort Colors · Find Minimum in Rotated Sorted Array |
 
