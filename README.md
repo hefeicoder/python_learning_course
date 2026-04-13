@@ -58,7 +58,7 @@ Function-based grading: your code is called with test inputs and the return valu
 | Heap | Last Stone Weight · Kth Largest in a Stream · K Weakest Rows · Top K Frequent Elements · Kth Largest Element |
 | Linked List | Reverse Linked List · Merge Two Sorted Lists · Remove Elements · Middle of the Linked List · Remove Nth From End |
 | Binary Tree | Maximum Depth · Invert Binary Tree · Symmetric Tree · Path Sum · Level Order Traversal · Lowest Common Ancestor of BST · Validate BST |
-| Graph | Find the Town Judge · Find if Path Exists · Island Perimeter · Max Area of Island · Number of Islands |
+| Graph | Flood Fill · Max Area of Island · Number of Provinces · Number of Islands · Rotting Oranges · Course Schedule · Course Schedule II |
 | Sorting & Binary Search | Binary Search · Search Insert Position · Squares of a Sorted Array · Sort Colors · Find Minimum in Rotated Sorted Array |
 
 **Test result display:** after running, shows `(x/y) tests passed` and, on failure, the first failing input with labeled parameter names (e.g. `nums = [3,2,4], target = 6`) plus the expected and actual values. Each problem has 8–10 test cases covering edge cases (empty input, negatives, duplicates, boundary values).
