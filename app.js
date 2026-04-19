@@ -645,7 +645,8 @@ async function loadPyodide() {
     // Pre-import common stdlib so students don't need to import in interview problems
     state.pyodide.runPython(`
 from collections import Counter, defaultdict, deque
-from heapq import heappush, heappop, heapify
+import heapq
+from heapq import heappush, heappop, heapify, nlargest, nsmallest
 import math
 `);
     state.pyodideReady = true;
