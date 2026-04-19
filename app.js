@@ -212,7 +212,7 @@ function showInterviewTopic(topicIndex, problemIndex) {
 
   const opsTable = document.getElementById('interview-operations');
   opsTable.innerHTML = topic.learn.operations
-    .map(op => `<tr><td>${op.name}</td><td>${op.complexity}</td></tr>`)
+    .map(op => `<tr><td>${op.name}</td><td>${op.signature || ''}</td><td>${op.complexity}</td></tr>`)
     .join('');
 
   document.getElementById('interview-python-tools').textContent =
@@ -645,7 +645,8 @@ async function loadPyodide() {
     // Pre-import common stdlib so students don't need to import in interview problems
     state.pyodide.runPython(`
 from collections import Counter, defaultdict, deque
-from heapq import heappush, heappop, heapify
+import heapq
+from heapq import heappush, heappop, heapify, nlargest, nsmallest
 import math
 `);
     state.pyodideReady = true;
