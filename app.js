@@ -212,7 +212,7 @@ function showInterviewTopic(topicIndex, problemIndex) {
 
   const opsTable = document.getElementById('interview-operations');
   opsTable.innerHTML = topic.learn.operations
-    .map(op => `<tr><td>${op.name}</td><td>${op.complexity}</td></tr>`)
+    .map(op => `<tr><td>${op.name}</td><td>${op.signature || ''}</td><td>${op.complexity}</td></tr>`)
     .join('');
 
   document.getElementById('interview-python-tools').textContent =
