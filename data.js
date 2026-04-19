@@ -781,11 +781,11 @@ const INTERVIEW = [
     learn: {
       what: "An ordered, index-based collection. Python's list is a dynamic array — it resizes automatically. Elements are stored contiguously so random access is O(1), but inserting or deleting in the middle shifts elements and costs O(n).",
       operations: [
-        { name: "Access by index",           signature: "list[i] → item",                  complexity: "O(1)" },
-        { name: "Append",                    signature: "list.append(x) → None",           complexity: "O(1) amortized" },
-        { name: "Insert / delete at middle", signature: "list.insert(i, x) / del list[i]", complexity: "O(n)" },
-        { name: "Search (unsorted)",         signature: "x in list → bool",                complexity: "O(n)" },
-        { name: "Slice [i:j]",               signature: "list[i:j] → list",                complexity: "O(k)" },
+        { name: "Access by index",           signature: "list[i] → item",                  complexity: "O(1)",             description: "Direct index lookup — no traversal needed" },
+        { name: "Append",                    signature: "list.append(x) → None",           complexity: "O(1) amortized",   description: "Add to end; occasionally triggers a resize but averages O(1)" },
+        { name: "Insert / delete at middle", signature: "list.insert(i, x) / del list[i]", complexity: "O(n)",             description: "All elements after the target index must shift" },
+        { name: "Search (unsorted)",         signature: "x in list → bool",                complexity: "O(n)",             description: "Must scan every element until a match is found" },
+        { name: "Slice [i:j]",               signature: "list[i:j] → list",                complexity: "O(k)",             description: "Copies k = j-i elements into a new list" },
       ],
       pythonTools: ["enumerate(iterable)", "zip(a, b)", "any(iterable)", "all(iterable)"],
       example: `nums = [3, 1, 4, 1, 5]
@@ -910,10 +910,10 @@ print(all(v > 0 for v in nums))  # True`,
     learn: {
       what: "A key-value store with O(1) average-case insert, delete, and lookup. Python's dict is a hash map. Counter counts element frequencies. defaultdict avoids KeyError by providing a default factory for missing keys.",
       operations: [
-        { name: "Get / set / delete", signature: "d[k] / d[k]=v / del d[k]",      complexity: "O(1) average" },
-        { name: "Iterate all keys",   signature: "for k in d → keys",             complexity: "O(n)" },
-        { name: "Counter(iterable)",  signature: "Counter(it) → Counter",         complexity: "O(n)" },
-        { name: "most_common(k)",     signature: "c.most_common(k) → [(k,n),...]",complexity: "O(n log k)" },
+        { name: "Get / set / delete", signature: "d[k] / d[k]=v / del d[k]",      complexity: "O(1) average",  description: "Hash function maps key to bucket; collisions make worst case O(n)" },
+        { name: "Iterate all keys",   signature: "for k in d → keys",             complexity: "O(n)",          description: "Visits every key in insertion order (Python 3.7+)" },
+        { name: "Counter(iterable)",  signature: "Counter(it) → Counter",         complexity: "O(n)",          description: "Counts each element in one pass" },
+        { name: "most_common(k)",     signature: "c.most_common(k) → [(k,n),...]",complexity: "O(n log k)",    description: "Returns k most frequent elements using a heap internally" },
       ],
       pythonTools: ["dict.get(key, default)", "Counter(iterable)", "defaultdict(list)"],
       example: `from collections import Counter, defaultdict
@@ -1039,10 +1039,10 @@ for i, v in enumerate([2, 7, 11]):
     learn: {
       what: "A last-in, first-out (LIFO) structure. Use Python list with append() (push) and pop(). The monotonic stack pattern maintains a stack in sorted order — powerful for 'next greater/smaller element' and histogram problems.",
       operations: [
-        { name: "Push (append)", signature: "list.append(x) → None", complexity: "O(1)" },
-        { name: "Pop",          signature: "list.pop() → item",    complexity: "O(1)" },
-        { name: "Peek",         signature: "list[-1] → item",      complexity: "O(1)" },
-        { name: "Search",       signature: "x in list → bool",     complexity: "O(n)" },
+        { name: "Push (append)", signature: "list.append(x) → None", complexity: "O(1)", description: "Add to top of stack (end of list)" },
+        { name: "Pop",          signature: "list.pop() → item",    complexity: "O(1)", description: "Remove and return top element" },
+        { name: "Peek",         signature: "list[-1] → item",      complexity: "O(1)", description: "Read top element without removing it" },
+        { name: "Search",       signature: "x in list → bool",     complexity: "O(n)", description: "No ordering guarantee — must scan all elements" },
       ],
       pythonTools: ["list.append(x)", "list.pop()", "list[-1]  # peek"],
       example: `stack = []
@@ -1172,11 +1172,11 @@ for i, t in enumerate(temps):
     learn: {
       what: "A first-in, first-out (FIFO) structure. Always use collections.deque — it provides O(1) append and popleft from both ends. A regular list costs O(n) for popleft. Deque is essential for BFS and sliding-window problems.",
       operations: [
-        { name: "append (right)", signature: "dq.append(x) → None",    complexity: "O(1)" },
-        { name: "appendleft",     signature: "dq.appendleft(x) → None",complexity: "O(1)" },
-        { name: "popleft",        signature: "dq.popleft() → item",    complexity: "O(1)" },
-        { name: "pop (right)",    signature: "dq.pop() → item",        complexity: "O(1)" },
-        { name: "list.pop(0)",    signature: "list.pop(0) → item",     complexity: "O(n) — avoid!" },
+        { name: "append (right)", signature: "dq.append(x) → None",    complexity: "O(1)",          description: "Add to right end of the deque" },
+        { name: "appendleft",     signature: "dq.appendleft(x) → None",complexity: "O(1)",          description: "Add to left end of the deque" },
+        { name: "popleft",        signature: "dq.popleft() → item",    complexity: "O(1)",          description: "Remove and return leftmost element — use this for FIFO queues" },
+        { name: "pop (right)",    signature: "dq.pop() → item",        complexity: "O(1)",          description: "Remove and return rightmost element" },
+        { name: "list.pop(0)",    signature: "list.pop(0) → item",     complexity: "O(n) — avoid!", description: "Shifts all remaining elements left — use deque.popleft() instead" },
       ],
       pythonTools: ["from collections import deque", "deque.append()", "deque.appendleft()", "deque.popleft()"],
       example: `from collections import deque
@@ -1345,11 +1345,11 @@ def stack_using_queues(operations, values):
     learn: {
       what: "A complete binary tree satisfying the heap property. Python's heapq is a min-heap. For a max-heap, negate values. Enables O(log n) insert and O(log n) extract-min. heapify converts a list in O(n). Use nlargest/nsmallest for top-k queries.",
       operations: [
-        { name: "heappush",       signature: "heappush(h, x) → None",        complexity: "O(log n)" },
-        { name: "heappop",        signature: "heappop(h) → item",            complexity: "O(log n)" },
-        { name: "Peek",           signature: "h[0] → item",                  complexity: "O(1)" },
-        { name: "heapify",        signature: "heapify(list) → None",         complexity: "O(n)" },
-        { name: "nlargest(k, h)", signature: "nlargest(k, h) → [item, ...]", complexity: "O(n log k)" },
+        { name: "heappush",       signature: "heappush(h, x) → None",        complexity: "O(log n)",  description: "Insert value and sift up to restore heap order" },
+        { name: "heappop",        signature: "heappop(h) → item",            complexity: "O(log n)",  description: "Remove and return the smallest value, then sift down" },
+        { name: "Peek",           signature: "h[0] → item",                  complexity: "O(1)",      description: "Smallest value is always at index 0 — read without removing" },
+        { name: "heapify",        signature: "heapify(list) → None",         complexity: "O(n)",      description: "Convert an existing list into a heap in-place" },
+        { name: "nlargest(k, h)", signature: "nlargest(k, h) → [item, ...]", complexity: "O(n log k)",description: "Return k largest values without modifying the heap" },
       ],
       pythonTools: ["import heapq", "heapq.heappush(h, x)", "heapq.heappop(h)", "heapq.nlargest(k, iterable)", "heapq.heapify(list)"],
       example: `import heapq
@@ -1500,11 +1500,11 @@ def _ll_to_list(node):
     learn: {
       what: "A sequence of nodes, each storing a value and a pointer to the next node. O(1) insert/delete at a known node, O(n) search. The slow/fast pointer technique detects cycles and finds midpoints. The dummy head node simplifies edge cases.",
       operations: [
-        { name: "Insert at head",    signature: "node.next = head; head = node",complexity: "O(1)" },
-        { name: "Insert at tail",    signature: "tail.next = node",            complexity: "O(n)" },
-        { name: "Delete known node", signature: "prev.next = node.next",       complexity: "O(1)" },
-        { name: "Search",            signature: "while node: ... → node",      complexity: "O(n)" },
-        { name: "Access by index",   signature: "for _ in range(i): node=node.next → node", complexity: "O(n)" },
+        { name: "Insert at head",    signature: "node.next = head; head = node",complexity: "O(1)", description: "Prepend by pointing new node to current head" },
+        { name: "Insert at tail",    signature: "tail.next = node",            complexity: "O(n)", description: "Must traverse to the end unless a tail pointer is maintained" },
+        { name: "Delete known node", signature: "prev.next = node.next",       complexity: "O(1)", description: "Unlink by bypassing the node — requires a reference to prev" },
+        { name: "Search",            signature: "while node: ... → node",      complexity: "O(n)", description: "No random access — must walk from head" },
+        { name: "Access by index",   signature: "for _ in range(i): node=node.next → node", complexity: "O(n)", description: "No index mapping — hop one node at a time" },
       ],
       pythonTools: ["Custom ListNode class", "Dummy head pattern", "Slow/fast pointer"],
       example: `class ListNode:
@@ -1678,10 +1678,10 @@ def _level_order(root):
     learn: {
       what: "A hierarchical structure where each node has at most two children. DFS traversal (recursive) costs O(n). Key traversal orders: inorder (left-root-right), preorder (root-left-right), postorder (left-right-root). BFS (level order) uses a deque.",
       operations: [
-        { name: "DFS traversal",     signature: "dfs(root) → None",             complexity: "O(n)" },
-        { name: "BFS traversal",     signature: "deque([root]); q.popleft()",   complexity: "O(n)" },
-        { name: "BST insert/search", signature: "insert(root, val) → TreeNode", complexity: "O(log n) avg, O(n) worst" },
-        { name: "Height",            signature: "height(root) → int",           complexity: "O(n)" },
+        { name: "DFS traversal",     signature: "dfs(root) → None",             complexity: "O(n)",                    description: "Recurse left and right; visits every node once" },
+        { name: "BFS traversal",     signature: "deque([root]); q.popleft()",   complexity: "O(n)",                    description: "Level-by-level using a queue; finds shortest path in unweighted trees" },
+        { name: "BST insert/search", signature: "insert(root, val) → TreeNode", complexity: "O(log n) avg, O(n) worst", description: "Halves search space each step; degrades to O(n) on a skewed tree" },
+        { name: "Height",            signature: "height(root) → int",           complexity: "O(n)",                    description: "Must visit every node to find the deepest path" },
       ],
       pythonTools: ["collections.deque  # for BFS", "Recursion with base case: if not root: return"],
       example: `class TreeNode:
@@ -1857,9 +1857,9 @@ def level_order(root):
     learn: {
       what: "A collection of nodes (vertices) connected by edges. Represent as an adjacency list using defaultdict(list). BFS finds shortest paths in unweighted graphs; DFS explores all reachable nodes. Both run in O(V + E).",
       operations: [
-        { name: "Add edge",             signature: "graph[u].append(v) → None",  complexity: "O(1)" },
-        { name: "BFS / DFS traversal", signature: "bfs(start) → visited set",   complexity: "O(V + E)" },
-        { name: "Adjacency lookup",    signature: "graph[node] → [neighbors]",  complexity: "O(degree)" },
+        { name: "Add edge",             signature: "graph[u].append(v) → None",  complexity: "O(1)",      description: "Append to adjacency list — no reordering needed" },
+        { name: "BFS / DFS traversal", signature: "bfs(start) → visited set",   complexity: "O(V + E)",  description: "Visits every vertex and crosses every edge once" },
+        { name: "Adjacency lookup",    signature: "graph[node] → [neighbors]",  complexity: "O(degree)", description: "Return the neighbor list; length equals the node's degree" },
       ],
       pythonTools: ["from collections import defaultdict, deque", "visited = set()  # track visited nodes"],
       example: `from collections import defaultdict, deque
@@ -2032,10 +2032,10 @@ def explore(grid, r, c, visited):
     learn: {
       what: "Binary search runs in O(log n) by halving the search space each step — requires a sorted input. Python's sorted() returns a new sorted list in O(n log n). The bisect module finds insert positions in O(log n) on already-sorted lists.",
       operations: [
-        { name: "sorted(iterable)",  signature: "sorted(it, key=fn) → list",      complexity: "O(n log n)" },
-        { name: "list.sort()",       signature: "list.sort(key=fn) → None",       complexity: "O(n log n) in-place" },
-        { name: "Binary search",     signature: "bisect_left(a, x) → int",        complexity: "O(log n)" },
-        { name: "bisect_left/right", signature: "bisect_left/right(a, x) → int", complexity: "O(log n)" },
+        { name: "sorted(iterable)",  signature: "sorted(it, key=fn) → list",      complexity: "O(n log n)",          description: "Returns a new sorted list; original is unchanged" },
+        { name: "list.sort()",       signature: "list.sort(key=fn) → None",       complexity: "O(n log n) in-place", description: "Sorts in-place using Timsort; returns None" },
+        { name: "Binary search",     signature: "bisect_left(a, x) → int",        complexity: "O(log n)",            description: "Requires sorted input; halves search space each step" },
+        { name: "bisect_left/right", signature: "bisect_left/right(a, x) → int", complexity: "O(log n)",            description: "bisect_left: insert before duplicates; bisect_right: insert after" },
       ],
       pythonTools: ["sorted(iterable, key=fn)", "bisect.bisect_left(a, x)", "bisect.bisect_right(a, x)"],
       example: `import bisect

@@ -339,6 +339,7 @@ body {
 .ops-table td { padding: 0.3rem 0.5rem; border-bottom: 1px solid #e2e8f0; }
 .ops-table td:first-child { color: #2d3748; font-family: "Fira Code", "Courier New", monospace; }
 .ops-table td:last-child { color: #4299e1; font-weight: 600; text-align: right; }
+.op-tooltip { border-bottom: 1px dotted #a0aec0; cursor: help; }
 
 /* ── Python tools inline list ────────────────────────────────────────────── */
 .interview-tools-text {
