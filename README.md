@@ -16,7 +16,7 @@ A browser-based Python learning site. Work through beginner problems, follow int
 
 ![Home screen](screenshot-home.png)
 
-![Interview editor](screenshot-interview2.png)
+![Interview editor](screenshot-interview.png)
 
 ## Features
 
