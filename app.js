@@ -787,7 +787,7 @@ function initEditor(id, value = '') {
   }
   editors[id] = CodeMirror(document.getElementById(id), {
     mode: 'python',
-    theme: 'material',
+    theme: 'monokai',
     lineNumbers: true,
     indentUnit: 4,
     tabSize: 4,
