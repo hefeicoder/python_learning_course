@@ -308,7 +308,7 @@ async function runInterviewCode() {
 
   // Build argTypes list for Python (null entries mean no conversion)
   const argTypes = problem.argTypes || [];
-  const argTypesJson = JSON.stringify(argTypes);
+  const argTypesJson = JSON.stringify(argTypes).replace(/null/g, 'None');
   const returnType = problem.returnType || 'list';
   const fnName = problem.functionName;
 
