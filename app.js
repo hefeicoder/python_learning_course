@@ -274,7 +274,7 @@ async function runInterviewCode() {
 
   const topic   = INTERVIEW[state.currentInterviewTopicIndex];
   const problem = topic.problems[state.currentInterviewProblemIndex];
-  const code    = document.getElementById('interview-code-editor').value;
+  const code    = getEditorValue('interview-code-editor');
   saveInterviewCode(problem.id, code);
   const resultsPanel   = document.getElementById('interview-test-results');
   const feedbackBanner = document.getElementById('interview-feedback-banner');
@@ -469,7 +469,7 @@ function showTutorial(topicIndex, questionIndex) {
 async function runTutorialCode() {
   if (!state.pyodideReady) return;
 
-  const code = document.getElementById('tutorial-code-editor').value;
+  const code = getEditorValue('tutorial-code-editor');
   const outputPanel = document.getElementById('tutorial-output-panel');
   const outputText = document.getElementById('tutorial-output-text');
   const feedbackBanner = document.getElementById('tutorial-feedback-banner');
@@ -688,7 +688,7 @@ function showEditor(problemId) {
 async function runCode() {
   if (!state.pyodideReady) return;
 
-  const code = document.getElementById('code-editor').value;
+  const code = getEditorValue('code-editor');
   const outputPanel = document.getElementById('output-panel');
   const outputText = document.getElementById('output-text');
   const feedbackBanner = document.getElementById('feedback-banner');
@@ -777,36 +777,43 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ─── Set editor value and sync line numbers ───────────────────────────────────
-function setEditorValue(id, value) {
-  const el = document.getElementById(id);
-  el.value = value;
-  el.dispatchEvent(new Event('input'));
+// ─── CodeMirror instances ─────────────────────────────────────────────────────
+const editors = {};
+
+function initEditor(id, value = '') {
+  if (editors[id]) {
+    editors[id].setValue(value);
+    return;
+  }
+  editors[id] = CodeMirror(document.getElementById(id), {
+    mode: 'python',
+    theme: 'dracula',
+    lineNumbers: true,
+    indentUnit: 4,
+    tabSize: 4,
+    indentWithTabs: false,
+    value,
+    extraKeys: { Tab: cm => cm.replaceSelection('    ') },
+  });
 }
 
-// ─── Line numbers for all code editors ───────────────────────────────────────
-function initLineNumbers(ta) {
-  const wrap = document.createElement('div');
-  wrap.className = 'editor-wrap';
-  ta.parentNode.insertBefore(wrap, ta);
-  const nums = document.createElement('div');
-  nums.className = 'line-nums';
-  wrap.appendChild(nums);
-  wrap.appendChild(ta);
-
-  function update() {
-    const count = ta.value.split('\n').length;
-    nums.innerHTML = Array.from({length: count}, (_, i) => `<span>${i + 1}</span>`).join('');
-    nums.scrollTop = ta.scrollTop;
+function setEditorValue(id, value) {
+  if (editors[id]) {
+    editors[id].setValue(value);
+  } else {
+    initEditor(id, value);
   }
-  ta.addEventListener('input', update);
-  ta.addEventListener('scroll', () => { nums.scrollTop = ta.scrollTop; });
-  update();
+}
+
+function getEditorValue(id) {
+  return editors[id] ? editors[id].getValue() : '';
 }
 
 // ─── Bootstrap ───────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.code-editor').forEach(initLineNumbers);
+  initEditor('code-editor');
+  initEditor('tutorial-code-editor');
+  initEditor('interview-code-editor');
 
   document.getElementById('btn-clear-history').addEventListener('click', () => {
     localStorage.removeItem('pylearn_solved');
