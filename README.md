@@ -1,6 +1,6 @@
 # Python Self-Learning: From Zero to Interview-Ready
 
-[![Live Demo](https://img.shields.io/badge/🌐%20Try%20it%20Live-python--learning--course.pages.dev-blue?style=for-the-badge)](https://python-learning-course.pages.dev)
+[![Live Demo](https://img.shields.io/badge/🌐%20Try%20it%20Live-pythonfreecourse.com-blue?style=for-the-badge)](https://pythonfreecourse.com)
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
