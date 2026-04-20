@@ -6,6 +6,8 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <title>Learn Python!</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/monokai.min.css">
 </head>
 <body>
   <!-- View: Level Select -->
@@ -35,7 +37,7 @@
       <h3 id="editor-title"></h3>
       <p id="editor-description" class="editor-description"></p>
       <p id="editor-hint" class="editor-hint hidden"></p>
-      <textarea id="code-editor" class="code-editor" spellcheck="false" autocorrect="off" autocapitalize="none" placeholder="# Write your Python code here" aria-label="Python code editor"></textarea>
+      <div id="code-editor" class="code-editor-cm"></div>
       <button id="btn-run" class="btn-primary" disabled>Loading Python...</button>
       <div id="output-panel" class="output-panel hidden">
         <p class="output-label">Output:</p>
@@ -78,7 +80,7 @@
     <div class="card editor-card">
       <p id="tutorial-question-label" class="tutorial-question-label"></p>
       <p id="tutorial-question-description" class="editor-description"></p>
-      <textarea id="tutorial-code-editor" class="code-editor" spellcheck="false" autocorrect="off" autocapitalize="none" placeholder="# Write your Python code here" aria-label="Python code editor"></textarea>
+      <div id="tutorial-code-editor" class="code-editor-cm"></div>
       <button id="btn-run-tutorial" class="btn-primary" disabled>Loading Python...</button>
       <div id="tutorial-output-panel" class="output-panel hidden">
         <p class="output-label">Output:</p>
@@ -130,13 +132,15 @@
       </div>
       <p id="interview-problem-description" class="editor-description"></p>
       <pre id="interview-problem-example" class="problem-example"></pre>
-      <textarea id="interview-code-editor" class="code-editor" spellcheck="false" autocorrect="off" autocapitalize="none" placeholder="# Implement the function" aria-label="Python code editor"></textarea>
+      <div id="interview-code-editor" class="code-editor-cm"></div>
       <button id="btn-run-interview" class="btn-primary" disabled>Loading Python...</button>
       <div id="interview-test-results" class="interview-test-results hidden"></div>
       <div id="interview-feedback-banner" class="feedback-banner hidden"></div>
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
