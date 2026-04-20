@@ -153,7 +153,6 @@ body {
   font-family: "Fira Code", "Courier New", monospace;
   font-size: 0.95rem;
   line-height: 1.6;
-  border-radius: 6px;
 }
 .code-editor-cm .CodeMirror-scroll { min-height: 320px; }
 .output-panel { margin-top: 1rem; }
