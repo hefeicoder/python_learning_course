@@ -1,5 +1,7 @@
 # Python Self-Learning: From Zero to Interview-Ready
 
+[![Live Demo](https://img.shields.io/badge/🌐%20Try%20it%20Live-python--learning--course.pages.dev-blue?style=for-the-badge)](https://python-learning-course.pages.dev)
+
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 A browser-based Python learning site. Work through beginner problems, follow interactive tutorials, and practice data-structure interview questions — all with instant feedback and no installation required.
