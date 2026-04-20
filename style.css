@@ -155,7 +155,7 @@ body {
   line-height: 1.6;
 }
 .code-editor-cm .CodeMirror-scroll { min-height: 320px; }
-.code-editor-cm .cm-error { background: none; }
+.code-editor-cm .cm-error { background: none !important; color: inherit !important; }
 .output-panel { margin-top: 1rem; }
 .output-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #718096; margin-bottom: 0.25rem; }
 #output-text {
