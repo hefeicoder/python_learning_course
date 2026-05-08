@@ -160,6 +160,54 @@
     </div>
   </div>
 
+  <!-- View: Interview2 Topics -->
+  <div id="view-interview2-topics" class="view hidden">
+    <button id="btn-back-from-interview2-topics" class="btn-secondary">← All Levels</button>
+    <h2 style="margin-top:1rem;">Interview Prep 2 — Non-LeetCode</h2>
+    <p id="interview2-topics-subtitle" class="subtitle"></p>
+    <ul id="interview2-topics-list" class="problems-list"></ul>
+  </div>
+
+  <!-- View: Interview2 Topic (Learn + Practice) -->
+  <div id="view-interview2-topic" class="view hidden">
+    <button id="btn-back-to-interview2-topics" class="btn-secondary">← All Topics</button>
+    <div id="interview2-topic-nav" class="interview-topic-nav"></div>
+    <p id="interview2-progress" class="subtitle" style="margin-top:0.5rem;"></p>
+
+    <div class="card interview-learn-card">
+      <h3 id="interview2-topic-title"></h3>
+      <div class="learn-block">
+        <span class="learn-label">What is it?</span>
+        <p id="interview2-what" class="learn-text"></p>
+      </div>
+      <div class="learn-block">
+        <span class="learn-label">When to use it?</span>
+        <p id="interview2-when" class="learn-text"></p>
+      </div>
+      <div class="learn-block">
+        <span class="learn-label">Key Insight</span>
+        <p id="interview2-key-insight" class="learn-text"></p>
+      </div>
+      <div class="learn-block">
+        <span class="learn-label">Example</span>
+        <pre id="interview2-example" class="code-example"></pre>
+      </div>
+    </div>
+
+    <div class="card editor-card">
+      <div id="interview2-problem-tabs" class="interview-problem-tabs"></div>
+      <div class="interview-problem-header">
+        <h4 id="interview2-problem-title"></h4>
+      </div>
+      <p id="interview2-problem-description" class="editor-description"></p>
+      <pre id="interview2-problem-example" class="problem-example"></pre>
+      <div id="interview2-code-editor" class="code-editor-cm"></div>
+      <button id="btn-run-interview2" class="btn-primary" disabled>Loading Python...</button>
+      <div id="interview2-test-results" class="interview-test-results hidden"></div>
+      <div id="interview2-feedback-banner" class="feedback-banner hidden"></div>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
   <script src="data.js"></script>

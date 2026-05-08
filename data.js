@@ -2228,3 +2228,237 @@ print(sorted(nums, reverse=True))  # [9,7,5,3,1]`,
     ],
   },
 ];
+
+const INTERVIEW2 = [
+  {
+    id: "nd1",
+    title: "Rate Limiter",
+    learn: {
+      what: "A rate limiter controls how many requests a client can make in a time window. The two most common algorithms are token bucket (allows controlled bursts) and sliding window (strict per-window counting). Both are implemented as a class with an allow(timestamp) method.",
+      when: "Use when protecting a service from overload — API gateways, cache services, downstream dependencies. Reach for token bucket first in an interview: it models real usage (bursty clients) and only requires storing two values per client (token count + last timestamp).",
+      keyInsight: "Token bucket: lazily refill tokens based on elapsed time; clamp to capacity. Sliding window: keep a log of accepted timestamps; count how many fall inside the current window (t - window_size, t] — strictly greater than t - window_size.",
+      example: `# Token Bucket — O(1) per call
+class RateLimiter:
+    def __init__(self, capacity, refill_rate):
+        self.capacity = capacity
+        self.refill_rate = refill_rate  # tokens per second
+        self.tokens = capacity          # start full
+        self.last_time = 0
+
+    def allow(self, timestamp):
+        elapsed = timestamp - self.last_time
+        self.tokens = min(self.capacity,
+                          self.tokens + elapsed * self.refill_rate)
+        self.last_time = timestamp
+        if self.tokens >= 1:
+            self.tokens -= 1
+            return True
+        return False`,
+    },
+    problems: [
+      {
+        id: "nd1_1",
+        title: "Token Bucket Rate Limiter",
+        difficulty: "medium",
+        description: "Implement a thread-safe token bucket rate limiter. The bucket starts full with capacity tokens and refills at refill_rate tokens per second (computed lazily on each call). allow(timestamp) must be thread-safe — use threading.Lock so that two threads cannot both pass the token check simultaneously. Returns True if allowed, False if empty. Timestamps are non-decreasing integers (seconds).",
+        stub: `import threading
+
+class RateLimiter:
+    def __init__(self, capacity, refill_rate):
+        self._lock = threading.Lock()
+        # your code here
+
+    def allow(self, timestamp):
+        with self._lock:
+            pass  # your code here`,
+        className: "RateLimiter",
+        testMethod: "allow",
+        tests: [
+          {
+            label: "capacity=3, rate=1: burst then refill",
+            init: [3, 1],
+            calls: [
+              { args: [0], expected: true  },
+              { args: [0], expected: true  },
+              { args: [0], expected: true  },
+              { args: [0], expected: false },
+              { args: [1], expected: true  },
+              { args: [1], expected: false },
+              { args: [3], expected: true  },
+            ],
+          },
+          {
+            label: "capacity=2, rate=10: refill capped at capacity",
+            init: [2, 10],
+            calls: [
+              { args: [0], expected: true  },
+              { args: [0], expected: true  },
+              { args: [0], expected: false },
+              { args: [1], expected: true  },
+              { args: [1], expected: true  },
+              { args: [1], expected: false },
+            ],
+          },
+          {
+            label: "capacity=1, rate=1: no bursting allowed",
+            init: [1, 1],
+            calls: [
+              { args: [0], expected: true  },
+              { args: [0], expected: false },
+              { args: [1], expected: true  },
+              { args: [1], expected: false },
+              { args: [2], expected: true  },
+            ],
+          },
+          {
+            label: "capacity=5, rate=2: burst then steady state",
+            init: [5, 2],
+            calls: [
+              { args: [0], expected: true  },
+              { args: [0], expected: true  },
+              { args: [0], expected: true  },
+              { args: [0], expected: true  },
+              { args: [0], expected: true  },
+              { args: [0], expected: false },
+              { args: [1], expected: true  },
+              { args: [1], expected: true  },
+              { args: [1], expected: false },
+            ],
+          },
+          {
+            label: "capacity=3, rate=2: long idle must not overflow capacity",
+            init: [3, 2],
+            calls: [
+              { args: [0], expected: true  },
+              { args: [0], expected: true  },
+              { args: [0], expected: true  },
+              { args: [0], expected: false },
+              { args: [100], expected: true  }, // 200 tokens earned, capped at 3
+              { args: [100], expected: true  },
+              { args: [100], expected: true  },
+              { args: [100], expected: false }, // bucket is 3, not 200
+            ],
+          },
+          {
+            label: "capacity=3, rate=5: huge elapsed on first call must not over-refill",
+            init: [3, 5],
+            calls: [
+              { args: [1000], expected: true  }, // elapsed=1000, 5000 earned, capped at 3
+              { args: [1000], expected: true  },
+              { args: [1000], expected: true  },
+              { args: [1000], expected: false }, // 4th fails — without min() would have 5000 tokens
+            ],
+          },
+          {
+            label: "capacity=3, rate=1: last_time updates each call (no double-counting)",
+            init: [3, 1],
+            calls: [
+              { args: [0], expected: true  }, // 3→2, last=0
+              { args: [0], expected: true  }, // 2→1
+              { args: [0], expected: true  }, // 1→0
+              { args: [0], expected: false },
+              { args: [1], expected: true  }, // +1→1, use→0, last=1
+              { args: [2], expected: true  }, // +1 only (not +2), use→0, last=2
+              { args: [3], expected: true  }, // +1 only, use→0, last=3
+              { args: [3], expected: false }, // still empty
+            ],
+          },
+          {
+            label: "thread safety: __init__ must create a threading.Lock",
+            type: "code",
+            code: `import threading
+rl = RateLimiter(3, 1)
+lock_type = type(threading.Lock())
+has_lock = any(isinstance(getattr(rl, a), lock_type) for a in vars(rl))
+assert has_lock, "No threading.Lock found — add self._lock = threading.Lock() in __init__"`,
+          },
+          {
+            label: "thread safety: allow() must acquire the lock on every call",
+            type: "code",
+            code: `import threading
+
+class LockSpy:
+    def __init__(self):
+        self._lock = threading.Lock()
+        self.count = 0
+    def acquire(self, *a, **kw):
+        self.count += 1
+        return self._lock.acquire(*a, **kw)
+    def release(self):
+        return self._lock.release()
+    def __enter__(self):
+        self.count += 1
+        self._lock.acquire()
+        return self
+    def __exit__(self, *a):
+        self._lock.release()
+
+rl = RateLimiter(3, 1)
+spy = LockSpy()
+lock_type = type(threading.Lock())
+for attr in vars(rl):
+    if isinstance(getattr(rl, attr), lock_type):
+        setattr(rl, attr, spy)
+        break
+
+rl.allow(0)
+assert spy.count > 0, "allow() never acquires the lock — wrap your logic with 'with self._lock:'"`,
+          },
+        ],
+      },
+      {
+        id: "nd1_2",
+        title: "Sliding Window Rate Limiter",
+        difficulty: "medium",
+        description: "Implement a sliding window rate limiter. It allows at most max_requests in any window_size-second window. allow(timestamp) returns True if the request is within the limit, False if it exceeds it. Count only requests strictly in the window (t - window_size, t] — i.e., req_time > t - window_size. Timestamps are non-decreasing integers.",
+        stub: `class SlidingWindowRateLimiter:
+    def __init__(self, max_requests, window_size):
+        pass
+
+    def allow(self, timestamp):
+        pass`,
+        className: "SlidingWindowRateLimiter",
+        testMethod: "allow",
+        tests: [
+          {
+            label: "max=3, window=10: basic sliding",
+            init: [3, 10],
+            calls: [
+              { args: [1],  expected: true  },
+              { args: [5],  expected: true  },
+              { args: [9],  expected: true  },
+              { args: [9],  expected: false },
+              { args: [11], expected: true  },
+              { args: [15], expected: true  },
+              { args: [15], expected: false },
+              { args: [20], expected: true  },
+            ],
+          },
+          {
+            label: "max=1, window=5: one request per window",
+            init: [1, 5],
+            calls: [
+              { args: [0], expected: true  },
+              { args: [0], expected: false },
+              { args: [4], expected: false },
+              { args: [5], expected: true  },
+              { args: [6], expected: false },
+            ],
+          },
+          {
+            label: "max=2, window=3: overlapping windows",
+            init: [2, 3],
+            calls: [
+              { args: [0], expected: true  },
+              { args: [1], expected: true  },
+              { args: [2], expected: false },
+              { args: [3], expected: true  },
+              { args: [3], expected: false },
+              { args: [4], expected: true  },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+];
