@@ -6,6 +6,8 @@ const state = {
   currentTutorialQuestionIndex: null,
   currentInterviewTopicIndex: null,
   currentInterviewProblemIndex: null,
+  currentInterview2TopicIndex: null,
+  currentInterview2ProblemIndex: null,
   advanceTimer: null,
   pyodideReady: false,
   pyodide: null,
@@ -97,6 +99,31 @@ function saveInterviewCode(id, code) {
   const all = JSON.parse(localStorage.getItem('pylearn_interview_code') || '{}');
   all[id] = code;
   localStorage.setItem('pylearn_interview_code', JSON.stringify(all));
+}
+
+// ─── Interview2 localStorage helpers ─────────────────────────────────────────
+function getInterview2Solved() {
+  return JSON.parse(localStorage.getItem('pylearn_interview2_solved') || '[]');
+}
+function markInterview2Solved(id) {
+  const solved = getInterview2Solved();
+  if (!solved.includes(id)) {
+    solved.push(id);
+    localStorage.setItem('pylearn_interview2_solved', JSON.stringify(solved));
+  }
+}
+function isInterview2TopicComplete(topic) {
+  const solved = getInterview2Solved();
+  return topic.problems.every(p => solved.includes(p.id));
+}
+function getInterview2Code(id) {
+  const all = JSON.parse(localStorage.getItem('pylearn_interview2_code') || '{}');
+  return all[id] || null;
+}
+function saveInterview2Code(id, code) {
+  const all = JSON.parse(localStorage.getItem('pylearn_interview2_code') || '{}');
+  all[id] = code;
+  localStorage.setItem('pylearn_interview2_code', JSON.stringify(all));
 }
 
 function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
@@ -534,6 +561,250 @@ sys.stdout = io.StringIO()
   }
 }
 
+// ─── Interview2 Topics View ───────────────────────────────────────────────────
+function showInterview2Topics() {
+  const completedCount = INTERVIEW2.filter(t => isInterview2TopicComplete(t)).length;
+
+  showView('view-interview2-topics');
+  document.getElementById('interview2-topics-subtitle').textContent =
+    `${completedCount} of ${INTERVIEW2.length} topics completed`;
+  document.getElementById('btn-back-from-interview2-topics').onclick = showLevelSelect;
+
+  const list = document.getElementById('interview2-topics-list');
+  list.innerHTML = '';
+  const solved = getInterview2Solved();
+  INTERVIEW2.forEach((topic, idx) => {
+    const solvedCount = topic.problems.filter(p => solved.includes(p.id)).length;
+    const isComplete = solvedCount === topic.problems.length;
+    const isStarted = solvedCount > 0;
+    const statusText = isComplete ? '✓ Done' : isStarted ? `${solvedCount} / ${topic.problems.length} solved` : 'Not started';
+    const statusClass = isComplete ? 'solved' : isStarted ? 'in-progress' : 'unsolved';
+    const li = document.createElement('li');
+    li.className = `problem-item${isComplete ? ' solved' : ''}`;
+    li.innerHTML = `
+      <span class="problem-title"><span class="problem-num">${idx + 1}</span> ${topic.title}</span>
+      <span class="problem-status ${statusClass}">${statusText}</span>
+    `;
+    li.addEventListener('click', () => showInterview2Topic(idx, 0));
+    list.appendChild(li);
+  });
+}
+
+// ─── Interview2 Topic View ────────────────────────────────────────────────────
+function showInterview2Topic(topicIndex, problemIndex) {
+  state.currentInterview2TopicIndex = topicIndex;
+  state.currentInterview2ProblemIndex = problemIndex;
+
+  const topic = INTERVIEW2[topicIndex];
+  const problem = topic.problems[problemIndex];
+  const solved = getInterview2Solved();
+
+  showView('view-interview2-topic');
+
+  document.getElementById('btn-back-to-interview2-topics').onclick = showInterview2Topics;
+
+  // Topic nav dots
+  const nav = document.getElementById('interview2-topic-nav');
+  nav.innerHTML = '';
+  INTERVIEW2.forEach((t, i) => {
+    const isComplete = isInterview2TopicComplete(t);
+    const isCurrent = i === topicIndex;
+    const dot = document.createElement('button');
+    dot.className = ['topic-nav-dot', isCurrent ? 'active' : '', isComplete ? 'done' : ''].filter(Boolean).join(' ');
+    dot.title = t.title;
+    dot.textContent = isComplete ? '✓' : (i + 1);
+    dot.addEventListener('click', () => showInterview2Topic(i, 0));
+    nav.appendChild(dot);
+  });
+
+  document.getElementById('interview2-progress').textContent =
+    `Topic ${topicIndex + 1} of ${INTERVIEW2.length}`;
+
+  // Learn panel
+  document.getElementById('interview2-topic-title').textContent = topic.title;
+  document.getElementById('interview2-what').textContent = topic.learn.what;
+  document.getElementById('interview2-when').textContent = topic.learn.when;
+  document.getElementById('interview2-key-insight').textContent = topic.learn.keyInsight;
+  document.getElementById('interview2-example').textContent = topic.learn.example;
+
+  // Problem tabs
+  const tabs = document.getElementById('interview2-problem-tabs');
+  tabs.innerHTML = '';
+  topic.problems.forEach((p, i) => {
+    const isSolved = solved.includes(p.id);
+    const isActive = i === problemIndex;
+    const btn = document.createElement('button');
+    btn.className = ['problem-tab', isActive ? 'active' : '', isSolved ? 'solved' : ''].filter(Boolean).join(' ');
+    btn.innerHTML = `${i + 1} <span class="diff-badge ${p.difficulty}">${p.difficulty === 'easy' ? 'E' : 'M'}</span>`;
+    btn.addEventListener('click', () => showInterview2Topic(topicIndex, i));
+    tabs.appendChild(btn);
+  });
+
+  // Problem header (no LeetCode link)
+  document.getElementById('interview2-problem-title').textContent = problem.title;
+  document.getElementById('interview2-problem-description').textContent = problem.description;
+
+  // Show first scenario calls as example
+  const scenario = problem.tests.find(t => !t.type || t.type !== 'code') || null;
+  if (scenario) {
+    const callLines = scenario.calls.slice(0, 5).map((call, i) =>
+      `  Call ${i + 1}: ${problem.testMethod}(${call.args.join(', ')}) → ${call.expected}`
+    );
+    document.getElementById('interview2-problem-example').textContent =
+      `Scenario: ${problem.className}(${scenario.init.join(', ')})\n${callLines.join('\n')}`;
+  } else {
+    document.getElementById('interview2-problem-example').textContent = '';
+  }
+
+  // Editor
+  setEditorValue('interview2-code-editor', getInterview2Code(problem.id) ?? problem.stub);
+  document.getElementById('interview2-test-results').classList.add('hidden');
+  document.getElementById('interview2-test-results').innerHTML = '';
+  document.getElementById('interview2-feedback-banner').className = 'feedback-banner hidden';
+
+  document.getElementById('btn-run-interview2').onclick = runInterview2Code;
+}
+
+// ─── Interview2 Run ───────────────────────────────────────────────────────────
+async function runInterview2Code() {
+  if (!state.pyodideReady) return;
+
+  const topic   = INTERVIEW2[state.currentInterview2TopicIndex];
+  const problem = topic.problems[state.currentInterview2ProblemIndex];
+  const code    = getEditorValue('interview2-code-editor');
+  saveInterview2Code(problem.id, code);
+
+  const resultsPanel   = document.getElementById('interview2-test-results');
+  const feedbackBanner = document.getElementById('interview2-feedback-banner');
+
+  resultsPanel.innerHTML = '';
+  resultsPanel.classList.add('hidden');
+  feedbackBanner.className = 'feedback-banner hidden';
+
+  try {
+    state.pyodide.runPython(code);
+  } catch (err) {
+    feedbackBanner.textContent = 'Error in your code:\n' + err.message;
+    feedbackBanner.className = 'feedback-banner incorrect';
+    return;
+  }
+
+  state.pyodide.globals.set('_test_scenarios_js', problem.tests);
+
+  const className  = problem.className;
+  const methodName = problem.testMethod;
+
+  const testRunner = `
+import json as _json_out
+import traceback as _tb
+
+_all_scenarios = _test_scenarios_js.to_py()
+_results = []
+
+for _scenario in _all_scenarios:
+    _label = str(_scenario.get('label', ''))
+    _type  = str(_scenario.get('type', 'scenario'))
+
+    if _type == 'code':
+        try:
+            exec(str(_scenario['code']), globals())
+            _results.append({'pass': True, 'label': _label, 'first_fail': None})
+        except AssertionError as _e:
+            _msg = str(_e) or 'Assertion failed'
+            _results.append({'pass': False, 'label': _label, 'first_fail': {'error': _msg}, 'error': _msg})
+        except Exception as _e:
+            _msg = _tb.format_exc()
+            _results.append({'pass': False, 'label': _label, 'first_fail': {'error': _msg}, 'error': _msg})
+    else:
+        _init_args = list(_scenario['init'])
+        _calls = list(_scenario['calls'])
+
+        try:
+            _instance = ${className}(*_init_args)
+            _scenario_pass = True
+            _first_fail = None
+
+            for _i, _call in enumerate(_calls):
+                _call_args = list(_call['args'])
+                _expected = _call['expected']
+                if hasattr(_expected, 'to_py'):
+                    _expected = _expected.to_py()
+
+                try:
+                    _actual = getattr(_instance, '${methodName}')(*_call_args)
+                    if _actual != _expected and _first_fail is None:
+                        _scenario_pass = False
+                        _first_fail = {
+                            'call_num': _i + 1,
+                            'args': repr(_call_args),
+                            'expected': repr(_expected),
+                            'actual': repr(_actual),
+                        }
+                except Exception as _e:
+                    if _first_fail is None:
+                        _scenario_pass = False
+                        _first_fail = {
+                            'call_num': _i + 1,
+                            'args': repr(_call_args),
+                            'error': str(_e),
+                            'traceback': _tb.format_exc(),
+                        }
+                    break
+
+            _results.append({'pass': bool(_scenario_pass), 'label': _label, 'first_fail': _first_fail})
+        except Exception as _e:
+            _results.append({'pass': False, 'label': _label, 'error': str(_e), 'traceback': _tb.format_exc(), 'first_fail': None})
+
+_results_json = _json_out.dumps(_results)
+`;
+
+  let results;
+  try {
+    state.pyodide.runPython(testRunner);
+    results = JSON.parse(state.pyodide.globals.get('_results_json'));
+  } catch (err) {
+    feedbackBanner.textContent = 'Test runner error: ' + err.message;
+    feedbackBanner.className = 'feedback-banner incorrect';
+    return;
+  }
+
+  const allPass   = results.every(r => r.pass);
+  const passCount = results.filter(r => r.pass).length;
+
+  if (allPass) {
+    markInterview2Solved(problem.id);
+    feedbackBanner.textContent = `🎉 All ${results.length} / ${results.length} scenarios passed!`;
+    feedbackBanner.className = 'feedback-banner correct';
+    resultsPanel.classList.add('hidden');
+    triggerEmojiPop();
+    const tabEls = document.querySelectorAll('#interview2-problem-tabs .problem-tab');
+    if (tabEls[state.currentInterview2ProblemIndex]) {
+      tabEls[state.currentInterview2ProblemIndex].classList.add('solved');
+    }
+  } else {
+    feedbackBanner.textContent = `${passCount} / ${results.length} scenarios passed. Keep trying.`;
+    feedbackBanner.className = 'feedback-banner incorrect';
+
+    const firstFail = results.find(r => !r.pass);
+    if (firstFail) {
+      resultsPanel.classList.remove('hidden');
+      const row = document.createElement('div');
+      row.className = 'test-result-row fail';
+      if (firstFail.error) {
+        row.innerHTML = `<span class="test-icon">✗</span> Scenario: <em>${firstFail.label}</em><pre class="traceback-block">${firstFail.error}</pre>`;
+      } else if (firstFail.first_fail) {
+        const ff = firstFail.first_fail;
+        if (ff.error) {
+          row.innerHTML = `<span class="test-icon">✗</span> Scenario: <em>${firstFail.label}</em> — Call ${ff.call_num}: ${methodName}(${ff.args.slice(1, -1)})<pre class="traceback-block">${ff.traceback}</pre>`;
+        } else {
+          row.innerHTML = `<span class="test-icon">✗</span> Scenario: <em>${firstFail.label}</em> — Call ${ff.call_num}: ${methodName}(${ff.args.slice(1, -1)}) &nbsp;→&nbsp; expected <code>${ff.expected}</code>, got <code>${ff.actual}</code>`;
+        }
+      }
+      resultsPanel.appendChild(row);
+    }
+  }
+}
+
 // ─── Level Select View ────────────────────────────────────────────────────────
 function showLevelSelect() {
   const solved = getSolved();
@@ -599,6 +870,24 @@ function showLevelSelect() {
   `;
   interviewCard.addEventListener('click', showInterviewTopics);
   container.appendChild(interviewCard);
+
+  // Interview2 card
+  const interview2Solved = getInterview2Solved();
+  const interview2SolvedCount = interview2Solved.length;
+  const interview2Total = INTERVIEW2.reduce((sum, t) => sum + t.problems.length, 0);
+  const interview2Card = document.createElement('div');
+  interview2Card.className = 'level-card interview';
+  interview2Card.innerHTML = `
+    <div class="level-card-left">
+      <h3>Interview Prep 2</h3>
+      <p>Non-LeetCode design questions: rate limiters, system design coding</p>
+    </div>
+    <div class="level-card-right">
+      <span class="level-card-count">${interview2SolvedCount} / ${interview2Total} solved</span>
+    </div>
+  `;
+  interview2Card.addEventListener('click', showInterview2Topics);
+  container.appendChild(interview2Card);
 }
 
 function levelDescription(level) {
@@ -649,9 +938,10 @@ from collections import Counter, defaultdict, deque
 import heapq
 from heapq import heappush, heappop, heapify, nlargest, nsmallest
 import math
+import threading
 `);
     state.pyodideReady = true;
-    ['btn-run', 'btn-run-tutorial', 'btn-run-interview'].forEach(id => {
+    ['btn-run', 'btn-run-tutorial', 'btn-run-interview', 'btn-run-interview2'].forEach(id => {
       const btn = document.getElementById(id);
       if (btn) { btn.disabled = false; btn.textContent = 'Run Code'; }
     });
@@ -794,7 +1084,10 @@ function initEditor(id, value = '') {
     tabSize: 4,
     indentWithTabs: false,
     value,
-    extraKeys: { Tab: cm => cm.replaceSelection('    ') },
+    extraKeys: {
+      Tab: cm => cm.somethingSelected() ? cm.execCommand('indentMore') : cm.replaceSelection('    '),
+      'Shift-Tab': cm => cm.execCommand('indentLess'),
+    },
   });
 }
 
@@ -815,12 +1108,15 @@ document.addEventListener('DOMContentLoaded', () => {
   initEditor('code-editor');
   initEditor('tutorial-code-editor');
   initEditor('interview-code-editor');
+  initEditor('interview2-code-editor');
 
   document.getElementById('btn-clear-history').addEventListener('click', () => {
     localStorage.removeItem('pylearn_solved');
     localStorage.removeItem('pylearn_tutorial_solved');
     localStorage.removeItem('pylearn_interview_solved');
     localStorage.removeItem('pylearn_interview_code');
+    localStorage.removeItem('pylearn_interview2_solved');
+    localStorage.removeItem('pylearn_interview2_code');
     showLevelSelect();
   });
   showLevelSelect();

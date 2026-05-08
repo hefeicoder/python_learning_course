@@ -287,7 +287,9 @@ body {
 
 /* ── Interview wide views ────────────────────────────────────────────────── */
 #view-interview-topics,
-#view-interview-topic {
+#view-interview-topic,
+#view-interview2-topics,
+#view-interview2-topic {
   max-width: 1100px;
 }
 
