@@ -745,6 +745,7 @@ for _scenario in _all_scenarios:
                         _scenario_pass = False
                         _first_fail = {
                             'call_num': _i + 1,
+                            'args': repr(_call_args),
                             'error': str(_e),
                             'traceback': _tb.format_exc(),
                         }

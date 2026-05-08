@@ -2457,6 +2457,44 @@ assert spy.count > 0, "allow() never acquires the lock — wrap your logic with 
               { args: [4], expected: true  },
             ],
           },
+          {
+            label: "max=3, window=5: long idle purges all history",
+            init: [3, 5],
+            calls: [
+              { args: [0],   expected: true  },
+              { args: [0],   expected: true  },
+              { args: [0],   expected: true  },
+              { args: [0],   expected: false }, // at limit
+              { args: [100], expected: true  }, // all t=0 purged (0 <= 95), fresh window
+              { args: [100], expected: true  },
+              { args: [100], expected: true  },
+              { args: [100], expected: false }, // back at limit, not overflowed
+            ],
+          },
+          {
+            label: "max=1, window=1: exactly one request per second",
+            init: [1, 1],
+            calls: [
+              { args: [0], expected: true  },
+              { args: [0], expected: false },
+              { args: [1], expected: true  }, // t=0 drops (0 <= 0), slot opens
+              { args: [1], expected: false },
+              { args: [2], expected: true  }, // t=1 drops (1 <= 1)
+              { args: [2], expected: false },
+            ],
+          },
+          {
+            label: "max=2, window=3: first call at non-zero timestamp",
+            init: [2, 3],
+            calls: [
+              { args: [100], expected: true  }, // deque empty, no history to clear
+              { args: [100], expected: true  },
+              { args: [100], expected: false }, // at limit
+              { args: [103], expected: true  }, // allow_time=100, both t=100 popped
+              { args: [103], expected: true  },
+              { args: [103], expected: false },
+            ],
+          },
         ],
       },
     ],
