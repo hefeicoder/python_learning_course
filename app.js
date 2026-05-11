@@ -366,6 +366,8 @@ for _tc in _test_cases:
             _converted_args.append(_list_to_ll(_arg) if _arg else None)
         elif _t == 'tree':
             _converted_args.append(_build_tree(_arg) if _arg else None)
+        elif _t == 'graph':
+            _converted_args.append(_build_graph(_arg) if _arg else None)
         else:
             _converted_args.append(_arg)
 
@@ -375,6 +377,8 @@ for _tc in _test_cases:
             _actual = _ll_to_list(_actual) if _actual else []
         elif _return_type == 'tree':
             _actual = _level_order(_actual) if _actual else []
+        elif _return_type == 'graph':
+            _actual = _graph_to_adj(_actual) if _actual is not None else None
         _pass = _actual == _expected
         _results.append({'pass': bool(_pass), 'actual': repr(_actual), 'expected': repr(_expected), 'args': _display_args})
     except Exception as _e:

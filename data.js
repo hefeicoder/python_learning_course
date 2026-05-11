@@ -1854,6 +1854,34 @@ def level_order(root):
   {
     id: "ds8",
     title: "Graph",
+    preamble: `class Node:
+    def __init__(self, val=0, neighbors=None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+
+def _build_graph(adj):
+    if not adj:
+        return None
+    nodes = [Node(i + 1) for i in range(len(adj))]
+    for i, neighbors in enumerate(adj):
+        nodes[i].neighbors = [nodes[j - 1] for j in neighbors]
+    return nodes[0]
+
+def _graph_to_adj(node):
+    if node is None:
+        return None
+    visited = {}
+    queue = [node]
+    while queue:
+        cur = queue.pop(0)
+        if cur.val in visited:
+            continue
+        visited[cur.val] = sorted(nb.val for nb in cur.neighbors)
+        for nb in cur.neighbors:
+            if nb.val not in visited:
+                queue.append(nb)
+    return [visited[i] for i in range(1, len(visited) + 1)]
+`,
     learn: {
       what: "A collection of nodes (vertices) connected by edges. Represent as an adjacency list using defaultdict(list). BFS finds shortest paths in unweighted graphs; DFS explores all reachable nodes. Both run in O(V + E).",
       operations: [
@@ -2020,6 +2048,60 @@ def explore(grid, r, c, visited):
           { args: [[[2,1,1],[1,1,1],[0,1,2]]],   expected: 2  },
           { args: [[[1,2],[1,1]]],                expected: 2  },
           { args: [[[2,1,1],[1,1,1],[1,1,1]]],   expected: 4  },
+        ],
+      },
+      {
+        id: "ds8_8", title: "Word Ladder", difficulty: "medium",
+        leetcode: { number: 127, url: "https://leetcode.com/problems/word-ladder/" },
+        description: "Given beginWord, endWord, and a wordList, return the number of words in the shortest transformation sequence from beginWord to endWord, where each step changes exactly one letter and every intermediate word must exist in wordList. Return 0 if no such sequence exists.",
+        stub: "def ladder_length(beginWord, endWord, wordList):\n    pass",
+        functionName: "ladder_length",
+        tests: [
+          { args: ["hit", "cog", ["hot","dot","dog","lot","log","cog"]],              expected: 5 },
+          { args: ["hit", "cog", ["hot","dot","dog","lot","log"]],                    expected: 0 },
+          { args: ["a",   "b",   ["b"]],                                              expected: 2 },
+          { args: ["hot", "dog", ["dot","dog"]],                                      expected: 3 },
+          { args: ["hot", "dog", ["hot","dog"]],                                      expected: 0 },
+          { args: ["hot", "hog", ["hog"]],                                            expected: 2 },
+          { args: ["hit", "cog", ["hot","dot","dog","lot","log","cog","hog"]],        expected: 4 },
+          { args: ["abc", "xyz", ["xbc","xbz","xyz"]],                               expected: 4 },
+          { args: ["lost","cost", ["cost","loft","lest","fest","fast","last"]],       expected: 2 },
+        ],
+      },
+      {
+        id: "ds8_9", title: "Word Search", difficulty: "medium",
+        leetcode: { number: 79, url: "https://leetcode.com/problems/word-search/" },
+        description: "Given an m×n grid of characters and a string word, return true if the word exists in the grid. The word must be constructed from sequentially adjacent cells (horizontally or vertically). The same cell cannot be used more than once.",
+        stub: "def exist(board, word):\n    pass",
+        functionName: "exist",
+        tests: [
+          { args: [[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCCED"], expected: true  },
+          { args: [[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "SEE"],    expected: true  },
+          { args: [[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCB"],   expected: false },
+          { args: [[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "SFCS"],   expected: true  },
+          { args: [[["A"]], "A"],                                                       expected: true  },
+          { args: [[["A"]], "B"],                                                       expected: false },
+          { args: [[["A","B"],["C","D"]], "ABDC"],                                     expected: true  },
+          { args: [[["A","B"],["C","D"]], "ABCD"],                                     expected: false },
+          { args: [[["A","A"],["A","A"]], "AAAAA"],                                    expected: false },
+        ],
+      },
+      {
+        id: "ds8_10", title: "Clone Graph", difficulty: "medium",
+        leetcode: { number: 133, url: "https://leetcode.com/problems/clone-graph/" },
+        description: "Given a reference to a node in a connected undirected graph, return a deep copy (clone) of the graph. Each node has a val (1..n) and a list of neighbors. The graph is represented as an adjacency list — Node class and helpers are pre-defined.",
+        stub: "def clone_graph(node):\n    pass",
+        functionName: "clone_graph",
+        argTypes: ["graph"],
+        returnType: "graph",
+        tests: [
+          { args: [[[2,4],[1,3],[2,4],[1,3]]],  expected: [[2,4],[1,3],[2,4],[1,3]] },
+          { args: [[[]]],                        expected: [[]]                      },
+          { args: [[[2],[1]]],                   expected: [[2],[1]]                 },
+          { args: [[[2,3],[1,3],[1,2]]],         expected: [[2,3],[1,3],[1,2]]       },
+          { args: [[[2],[1,3],[2]]],             expected: [[2],[1,3],[2]]           },
+          { args: [[[2,3,4],[1],[1],[1]]],        expected: [[2,3,4],[1],[1],[1]]     },
+          { args: [null],                        expected: null                      },
         ],
       },
     ],
