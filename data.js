@@ -2023,7 +2023,7 @@ def explore(grid, r, c, visited):
         ],
       },
       {
-        id: "ds8_8", title: "Word Ladder", difficulty: "hard",
+        id: "ds8_8", title: "Word Ladder", difficulty: "medium",
         leetcode: { number: 127, url: "https://leetcode.com/problems/word-ladder/" },
         description: "Given beginWord, endWord, and a wordList, return the number of words in the shortest transformation sequence from beginWord to endWord, where each step changes exactly one letter and every intermediate word must exist in wordList. Return 0 if no such sequence exists.",
         stub: "def ladder_length(beginWord, endWord, wordList):\n    pass",
