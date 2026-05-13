@@ -2084,6 +2084,7 @@ def explore(grid, r, c, visited):
           { args: [[["A","B"],["C","D"]], "ABDC"],                                     expected: true  },
           { args: [[["A","B"],["C","D"]], "ABCD"],                                     expected: false },
           { args: [[["A","A"],["A","A"]], "AAAAA"],                                    expected: false },
+          { args: [[["S","A","X"],["A","B","X"],["C","X","X"]], "SABAC"],             expected: true  },
         ],
       },
       {
