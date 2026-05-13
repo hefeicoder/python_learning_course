@@ -374,6 +374,15 @@ body {
 .diff-badge.easy   { background: #c6f6d5; color: #276749; }
 .diff-badge.medium { background: #feebc8; color: #7b341e; }
 
+/* ── Inline code in problem descriptions ────────────────────────────────── */
+code {
+  font-family: monospace;
+  font-size: 0.85em;
+  background: #edf2f7;
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+}
+
 /* ── Problem header (title + leetcode link) ──────────────────────────────── */
 .interview-problem-header {
   display: flex;

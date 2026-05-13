@@ -2090,7 +2090,7 @@ def explore(grid, r, c, visited):
       {
         id: "ds8_10", title: "Clone Graph", difficulty: "medium",
         leetcode: { number: 133, url: "https://leetcode.com/problems/clone-graph/" },
-        description: "Given a reference to a node in a connected undirected graph, return a deep copy (clone) of the graph. Each Node has a val (int, 1-indexed) and a neighbors list (List[Node]) — the Node class is pre-defined. Tests use an adjacency list: [[2,4],[1,3],[2,4],[1,3]] means node 1 connects to 2,4 and node 2 connects to 1,3.",
+        description: "Given a reference to a node in a connected undirected graph, return a deep copy (clone) of the graph. Each <code>Node</code> has a <code>val</code> (int, 1-indexed) and a <code>neighbors</code> list (<code>List[Node]</code>) — the Node class is pre-defined. Tests use an adjacency list: <code>[[2,4],[1,3],[2,4],[1,3]]</code> means node 1 connects to 2,4 and node 2 connects to 1,3.",
         stub: "def clone_graph(node):\n    pass",
         functionName: "clone_graph",
         argTypes: ["graph"],
