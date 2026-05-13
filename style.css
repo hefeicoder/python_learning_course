@@ -374,6 +374,19 @@ body {
 .diff-badge.easy   { background: #c6f6d5; color: #276749; }
 .diff-badge.medium { background: #feebc8; color: #7b341e; }
 
+/* ── Code block in problem descriptions ─────────────────────────────────── */
+.problem-codeblock {
+  font-family: monospace;
+  font-size: 0.85rem;
+  background: #f8fafc;
+  border-left: 3px solid #cbd5e0;
+  border-radius: 4px;
+  padding: 0.65rem 1rem;
+  margin: 0.5rem 0 0.75rem;
+  color: #4a5568;
+  white-space: pre;
+}
+
 /* ── Inline code in problem descriptions ────────────────────────────────── */
 code {
   font-family: monospace;

@@ -273,6 +273,14 @@ function showInterviewTopic(topicIndex, problemIndex) {
 
   document.getElementById('interview-problem-description').innerHTML = problem.description;
 
+  const codeBlockEl = document.getElementById('interview-problem-codeblock');
+  if (problem.codeBlock) {
+    codeBlockEl.textContent = problem.codeBlock;
+    codeBlockEl.classList.remove('hidden');
+  } else {
+    codeBlockEl.classList.add('hidden');
+  }
+
   // Examples from first 2-3 test cases with labeled param names
   const paramNames = (() => {
     const re = new RegExp(`def ${problem.functionName}\\(([^)]*)\\):`);
