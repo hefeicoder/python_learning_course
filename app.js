@@ -271,7 +271,15 @@ function showInterviewTopic(topicIndex, problemIndex) {
   lcLink.textContent = `#${problem.leetcode.number} ↗`;
   lcLink.href = problem.leetcode.url;
 
-  document.getElementById('interview-problem-description').textContent = problem.description;
+  document.getElementById('interview-problem-description').innerHTML = problem.description;
+
+  const codeBlockEl = document.getElementById('interview-problem-codeblock');
+  if (problem.codeBlock) {
+    codeBlockEl.textContent = problem.codeBlock;
+    codeBlockEl.classList.remove('hidden');
+  } else {
+    codeBlockEl.classList.add('hidden');
+  }
 
   // Examples from first 2-3 test cases with labeled param names
   const paramNames = (() => {
@@ -646,7 +654,7 @@ function showInterview2Topic(topicIndex, problemIndex) {
 
   // Problem header (no LeetCode link)
   document.getElementById('interview2-problem-title').textContent = problem.title;
-  document.getElementById('interview2-problem-description').textContent = problem.description;
+  document.getElementById('interview2-problem-description').innerHTML = problem.description;
 
   // Show first scenario calls as example
   const scenario = problem.tests.find(t => !t.type || t.type !== 'code') || null;
