@@ -2318,9 +2318,9 @@ const INTERVIEW2 = [
     id: "nd1",
     title: "Rate Limiter",
     learn: {
-      what: "A rate limiter controls how many requests a client can make in a time window. The two most common algorithms are token bucket (allows controlled bursts) and sliding window (strict per-window counting). Both are implemented as a class with an allow(timestamp) method.",
-      when: "Use when protecting a service from overload — API gateways, cache services, downstream dependencies. Reach for token bucket first in an interview: it models real usage (bursty clients) and only requires storing two values per client (token count + last timestamp).",
-      keyInsight: "Token bucket: lazily refill tokens based on elapsed time; clamp to capacity. Sliding window: keep a log of accepted timestamps; count how many fall inside the current window (t - window_size, t] — strictly greater than t - window_size.",
+      what: "A rate limiter controls how many requests a client can make in a time window. The three most common algorithms are token bucket (allows controlled bursts), sliding window log (exact per-request log), and sliding window counter (O(1)-memory approximation of the log). Each is implemented as a class with an allow(timestamp) method.",
+      when: "Use when protecting a service from overload — API gateways, cache services, downstream dependencies. Reach for token bucket first in an interview: it models bursty traffic with only two scalars per client. Use the sliding window log when accuracy matters and N is small. Use the sliding window counter in production: O(1) state with bounded error.",
+      keyInsight: "Token bucket: lazily refill tokens based on elapsed time; clamp to capacity. Sliding window log: keep a log of accepted timestamps; count how many fall inside (t - window_size, t]. Sliding window counter: divide time into fixed buckets of window_size; track only the current bucket count and the previous bucket count; estimate the rolling count as previous_count * (1 - elapsed/window_size) + current_count.",
       example: `# Token Bucket — O(1) per call
 class RateLimiter:
     def __init__(self, capacity, refill_rate):
@@ -2577,6 +2577,138 @@ assert spy.count > 0, "allow() never acquires the lock — wrap your logic with 
               { args: [103], expected: true  }, // allow_time=100, both t=100 popped
               { args: [103], expected: true  },
               { args: [103], expected: false },
+            ],
+          },
+        ],
+      },
+      {
+        id: "nd1_3",
+        title: "Sliding Window Counter Rate Limiter",
+        difficulty: "medium",
+        description: "Implement a sliding window counter rate limiter — an O(1)-memory approximation of the sliding window log. Divide time into fixed buckets of length window_size: bucket_id = timestamp // window_size. Track just two scalars: current_count (requests in the current bucket) and previous_count (requests in the bucket immediately before it). On each allow(timestamp), let elapsed = timestamp - bucket_id * window_size and estimate the rolling count in the trailing window of length window_size as estimated = previous_count * (1 - elapsed / window_size) + current_count. Allow the request iff estimated < max_requests (strict, and estimated may be fractional); if allowed, increment current_count. When timestamp moves into the next bucket, slide: previous_count := current_count, current_count := 0. If the gap skips a whole bucket (new bucket_id > old + 1), reset both counts to 0. Timestamps are non-decreasing integers (seconds).",
+        stub: `class SlidingWindowCounterRateLimiter:
+    def __init__(self, max_requests, window_size):
+        pass
+
+    def allow(self, timestamp):
+        pass`,
+        className: "SlidingWindowCounterRateLimiter",
+        testMethod: "allow",
+        tests: [
+          {
+            label: "max=3, window=10: fill bucket, slide into next",
+            init: [3, 10],
+            calls: [
+              { args: [0],  expected: true  },
+              { args: [0],  expected: true  },
+              { args: [0],  expected: true  },
+              { args: [0],  expected: false }, // at limit in bucket 0
+              { args: [10], expected: false }, // bucket 1 starts; prev=3, weight=1.0, est=3
+              { args: [15], expected: true  }, // elapsed=5, weight=0.5, est=1.5
+              { args: [15], expected: true  }, // est=2.5
+              { args: [15], expected: false }, // est=3.5
+            ],
+          },
+          {
+            label: "max=1, window=2: one request per partial window",
+            init: [1, 2],
+            calls: [
+              { args: [0], expected: true  }, // est=0
+              { args: [0], expected: false }, // est=1
+              { args: [1], expected: false }, // same bucket, est=1
+              { args: [2], expected: false }, // bucket 1; prev=1, weight=1.0, est=1
+              { args: [3], expected: true  }, // weight=0.5, est=0.5
+              { args: [3], expected: false }, // est=1.5
+              { args: [4], expected: false }, // bucket 2; prev=1, weight=1.0, est=1
+              { args: [5], expected: true  }, // weight=0.5, est=0.5
+              { args: [6], expected: false }, // bucket 3; prev=1, weight=1.0, est=1
+            ],
+          },
+          {
+            label: "max=3, window=5: long idle (gap > 1 bucket) must reset both counts",
+            init: [3, 5],
+            calls: [
+              { args: [0],   expected: true  },
+              { args: [0],   expected: true  },
+              { args: [0],   expected: true  },
+              { args: [0],   expected: false }, // at limit in bucket 0
+              { args: [100], expected: true  }, // bucket 20: skips many buckets, prev/current reset to 0
+              { args: [100], expected: true  },
+              { args: [100], expected: true  },
+              { args: [100], expected: false }, // back at limit, not over-counting old history
+            ],
+          },
+          {
+            label: "max=2, window=10: full-overlap rejects at exact boundary, weight decays linearly",
+            init: [2, 10],
+            calls: [
+              { args: [0],  expected: true  }, // est=0
+              { args: [9],  expected: true  }, // same bucket, est=1
+              { args: [9],  expected: false }, // est=2
+              { args: [10], expected: false }, // bucket 1, weight=1.0, est=2*1+0=2 — full overlap
+              { args: [14], expected: true  }, // weight=0.6, est=2*0.6+0=1.2
+              { args: [19], expected: true  }, // weight=0.1, est=2*0.1+1=1.2
+              { args: [19], expected: false }, // est=2*0.1+2=2.2
+              { args: [20], expected: false }, // bucket 2; prev=2 (current at end of bucket 1), weight=1.0, est=2
+            ],
+          },
+          {
+            label: "max=3, window=10: first call at non-zero timestamp (no prior history)",
+            init: [3, 10],
+            calls: [
+              { args: [50], expected: true  }, // first call, prev=0, current=0
+              { args: [50], expected: true  },
+              { args: [50], expected: true  },
+              { args: [50], expected: false }, // at limit
+              { args: [55], expected: false }, // same bucket, weight only scales previous (=0), est=3
+              { args: [60], expected: false }, // bucket 6; prev=3, weight=1.0, est=3
+              { args: [65], expected: true  }, // weight=0.5, est=1.5
+              { args: [65], expected: true  }, // est=2.5
+              { args: [65], expected: false }, // est=3.5
+            ],
+          },
+          {
+            label: "max=5, window=10: approximation — late-bucket burst lets early-next-bucket traffic in",
+            init: [5, 10],
+            calls: [
+              { args: [9], expected: true  }, // 5 requests right at end of bucket 0
+              { args: [9], expected: true  },
+              { args: [9], expected: true  },
+              { args: [9], expected: true  },
+              { args: [9], expected: true  },
+              { args: [9], expected: false }, // at limit
+              { args: [18], expected: true  }, // bucket 1, weight=0.2, est=5*0.2+0=1.0 — counter approximates uniform distribution
+              { args: [18], expected: true  }, // est=2.0
+              { args: [18], expected: true  }, // est=3.0
+              { args: [18], expected: true  }, // est=4.0
+              { args: [18], expected: false }, // est=5.0
+            ],
+          },
+          {
+            label: "max=2, window=5: steady-state across multiple consecutive bucket transitions",
+            init: [2, 5],
+            calls: [
+              { args: [0],  expected: true  },
+              { args: [0],  expected: true  },
+              { args: [0],  expected: false },
+              { args: [5],  expected: false }, // bucket 1; prev=2, weight=1.0, est=2
+              { args: [6],  expected: true  }, // weight=0.8, est=1.6
+              { args: [6],  expected: false }, // est=2.6
+              { args: [10], expected: true  }, // bucket 2; prev=1, weight=1.0, est=1
+              { args: [10], expected: false }, // est=2
+              { args: [15], expected: true  }, // bucket 3; prev=1, weight=1.0, est=1
+              { args: [15], expected: false }, // est=2
+            ],
+          },
+          {
+            label: "max=3, window=10: weight scales only previous_count, not current_count",
+            init: [3, 10],
+            calls: [
+              { args: [1], expected: true  }, // est=0+0=0
+              { args: [1], expected: true  }, // est=0+1=1
+              { args: [1], expected: true  }, // est=0+2=2
+              { args: [8], expected: false }, // same bucket; weight=0.2 affects prev (=0) only; est=0+3=3
+              { args: [9], expected: false }, // est=0+3=3 — current does NOT decay within the bucket
             ],
           },
         ],
